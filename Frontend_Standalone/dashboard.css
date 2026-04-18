@@ -1,0 +1,1521 @@
+:root {
+    --primary-hue: 220; /* Base hue value from 0 to 360 */
+    --primary-color: hsl(var(--primary-hue), 70%, 50%); /* Main system color */
+    --bg-color: hsl(var(--primary-hue), 30%, 94%); /* Light pastel background */
+    --overlay-color: hsla(var(--primary-hue), 40%, 20%, 0.4); /* Dark tinted overlay for sidebar */
+}
+/* ========== 1. RESET & BASE ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    min-height: 100vh; 
+    overflow-x: hidden; 
+    overflow-y: auto;   
+}
+
+.dashboard-wrapper {
+    display: flex;
+    height: 100%;
+}
+
+/* ========== 2. SIDEBAR STRUCTURE ========== */
+.sidebar {
+    width: 230px; 
+    position: fixed;
+    background: url('image/tank.jpg') no-repeat center center; 
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    box-shadow: 5px 0 15px rgba(0,0,0,0.3);
+    z-index: 1000;      /* Para laging nasa ibabaw */
+}
+
+.sidebar-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(255, 255, 255, 0.1); 
+    z-index: 0;
+}
+
+.sidebar-header, .header-divider, .profile-section, .sidebar-nav, .sidebar-footer {
+    position: relative;
+    z-index: 1;
+}
+
+/* ========== 3. BRANDING (HORIZONTAL LAYOUT) ========== */
+.sidebar-header {
+    padding: 25px 20px 0px 20px;
+}
+
+.system-status {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; 
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.status-dot { width: 8px; height: 8px; background-color: #4ade80; border-radius: 50%; }
+.status-text { font-size: 0.7rem; color: hwb(142 0% 11%); font-weight: 800; }
+
+
+.brand-section {
+    display: flex;
+    flex-direction: column; 
+    padding: 10px 12px;  
+    background: #7cd0db66;
+    backdrop-filter: blur(12px);
+ border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 18px; 
+    width: 98%;           
+    margin: 10px auto 35px auto; 
+    box-sizing: border-box;
+    min-height: 120px;     
+}
+
+/* Horizontal Wrapper */
+.brand-horizontal-layout {
+    display: flex;
+    flex-direction: row; 
+    align-items: center;   
+    width: 80%;
+    justify-content: space-between; 
+}
+
+
+.main-logo { 
+    width: 160px;         
+    max-height: 100px;     
+    object-fit: cover;
+    margin: -10px 0 0 -25px;           
+    flex-shrink: 0; 
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    padding-top: 5px;      
+    margin-top: -20px;      
+    margin-left: -30px;    
+}
+
+.brand-text h2 { 
+    font-size: 0.80rem !important; 
+    font-weight: 800 !important;
+    color: hwb(340 3% 54%);
+    margin: 0;              
+    white-space: nowrap;       
+    letter-spacing: 0.5px;      
+}
+
+/* ========== 5. PROFILE SECTION ========== */
+.profile-section {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(12px);
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    margin: -14px 10px 25px 10px;
+}
+
+.admin-icon-blue {
+    color: var(--primary-color) !important; 
+    font-size: 1.4rem;
+}
+
+.admin-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-label { 
+    font-size: 0.7rem; 
+    font-weight: 800; 
+    color: #000000; 
+}
+
+.admin-name { 
+    font-size: 0.9rem; 
+    font-weight: 800; 
+    color: var(--primary-color) !important;
+}
+
+/* ========== 6. NAVIGATION ========== */
+
+
+/* Container for all navigation links */
+.sidebar-nav {
+    flex: 1;
+    padding: 0 15px; 
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Space between nav items */
+}
+
+/* Individual navigation link */
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    text-decoration: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.2); /* Glass effect background */
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #1a1a1a; 
+    font-weight: 700; 
+    font-size: 0.9rem;
+    gap: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Icons inside navigation links */
+.nav-item i {
+    color: var(--primary-color);
+    width: 20px;
+    text-align: center;
+}
+
+/* Interaction: Hover state */
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.6);
+    transform: translateX(5px); /* Slight slide effect */
+    border-color: #0066FF;
+}
+
+/* Interaction: Active/Selected state */
+.nav-item.active {
+    background: var(--primary-color) !important; 
+    color: #fff !important; /* Text becomes white when active */
+    border: none;
+    box-shadow: 0 4px 15px hsla(var(--primary-hue), 70%, 50%, 0.4);
+}
+
+/* Change icon color to white when nav item is active */
+.nav-item.active i {
+    color: #fff;
+}
+
+/* ========== LOGOUT BUTTON (Dynamic Warning Style) ========== */
+.logout-btn {
+    /* Uses a fixed red hue (0) but mixed with a hint of your theme's lightness */
+    background: hsl(0, 80%, 60%); 
+    color: white; 
+    padding: 8px 16px; 
+    border-radius: 8px;
+    text-decoration: none; 
+    font-weight: 700; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px;
+    width: fit-content;
+    transition: all 0.3s ease;
+    /* Subtle glow using your primary theme color to make it blend in */
+    box-shadow: 0 4px 10px hsla(var(--primary-hue), 20%, 20%, 0.1);
+}
+
+.logout-btn:hover { 
+    /* Darker red on hover */
+    background: hsl(0, 90%, 45%); 
+    transform: scale(1.05); 
+    /* Stronger shadow on hover for depth */
+    box-shadow: 0 6px 15px hsla(var(--primary-hue), 50%, 30%, 0.2);
+}
+
+/* Optional: Adds a slight color tint to the icon only */
+.logout-btn i {
+    color: #ffffff;
+    transition: transform 0.3s ease;
+}
+
+.logout-btn:hover i {
+    transform: translateX(-3px); /* Interactive "Exit" animation */
+}
+
+
+
+
+.view-header h1 { font-size: 1.8rem; margin: 0; font-weight: 800; color: #1e293b; }
+.view-header p { margin: 5px 0 20px; color: #475569; }
+
+/*============= 2. TOP TANK CARDS (DASHBOARD OVERVIEW) =============*/
+.main-content { 
+    flex: 1;
+    margin-left: 230px; /* THIS IS THE FIX: Matches the sidebar width */
+    padding: 30px 40px; 
+    background-color: var(--bg-color) !important; 
+    width: calc(100% - 230px); /* Ensures it only takes the remaining space */
+    min-height: 100vh;
+    overflow-y: auto; /* Standard vertical scroll for the whole view */
+    position: relative;
+    display: block !important;
+}
+/* ============================================================
+   DASHBOARD VIEW STYLING
+   Scoped to #dashboard-view to prevent styling conflicts 
+   with other system tabs (Activity Log, Management, etc.)
+   ============================================================ */
+
+/* --- 1. TOP TANK CARD SECTION --- 
+   Handles the horizontal overview card layout at the top. */
+#dashboard-view .tank-cards-grid {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+#dashboard-view .tank-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 25px;
+    width: 450px; /* Provides ample space for text content */
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+/* --- STATUS DOT & TEXT COLORS --- */
+
+/* Base style para sa bilog */
+#dashboard-view .dot, .tm-card-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* 1. ONLINE - Green */
+.dot.online, .tm-card-dot.online {
+    background-color: #22c55e;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+}
+.online-text { color: #22c55e !important; }
+
+/* 2. WARNING - Yellow (Lag/Delay) */
+.dot.warning, .tm-card-dot.warning {
+    background-color: #f59e0b;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+}
+.warning-text { color: #f59e0b !important; }
+
+/* 3. OFFLINE - Red */
+.dot.offline, .tm-card-dot.offline {
+    background-color: #ef4444;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+.offline-text { color: #ef4444 !important; }
+
+
+/* Horizontal Progress Bar Container for the Top Card */
+#dashboard-view .progress-bar-container {
+    width: 100%;
+    height: 14px;
+    background: #f1f5f9;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+/* Target for updateDashboardUI() JavaScript width animation */
+#dashboard-view #card-progress-fill {
+    height: 100%;
+    background: var(--primary-color); 
+    width: 0%; 
+    transition: width 0.6s ease-in-out;
+}
+
+/* --- 2. LIVE MONITORING CONTAINER --- 
+   Main white card holding the tank visual and data tiles. */
+#dashboard-view .monitor-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+#dashboard-view .monitor-layout {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+}
+
+/* --- 3. TANK VISUAL ANIMATION --- 
+   Styles for the cylindrical water tank representation. */
+#dashboard-view .tank-visual-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+#dashboard-view .tank-cylindrical-outline {
+    width: 200px;
+    height: 350px; 
+    border: 5px solid var(--primary-color);
+    border-radius: 10px 10px 100px 100px; /* Creates the cylindrical effect */
+    position: relative;
+    overflow: hidden;
+    background: #e2e8f0;
+}
+
+/* Target for JavaScript vertical height animation (Dark Blue Water) */
+#dashboard-view #visual-water-fill {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: #00008b; 
+    transition: height 0.6s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#dashboard-view #inner-percent {
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* --- 4. INFORMATION TILES --- 
+   The blue boxes on the right containing real-time statistics. */
+#dashboard-view .stats-tiles-column, 
+#dashboard-view .system-info-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 1;
+}
+
+#dashboard-view .info-tile {
+    background: var(--primary-color); /* Consistent Sky Blue from Canva design */
+    color: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+#dashboard-view .info-tile label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    opacity: 0.9;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Mini Progress Bar inside the Capacity Tile */
+#dashboard-view .progress-mini-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    margin: 8px 0;
+    overflow: hidden;
+}
+
+/* Target for JavaScript mini-bar width update */
+#dashboard-view #monitor-mini-bar {
+    height: 100%;
+    background: #ffffff; 
+    width: 0%; 
+    transition: width 0.6s ease-in-out;
+}
+
+/* --- 5. CONTROLS & SYSTEM FOOTER --- 
+   Manual pump button and status tags. */
+/* --- 5. CONTROLS & SYSTEM FOOTER --- 
+    Contains styling for the manual pump toggle button, its various states 
+    (Active/Inactive/Disabled), and icon color logic. */
+
+/* Default Button State (When Pump is OFF and Mode is Manual) */
+#dashboard-view .manual-pump-btn-small {
+    background: #1e293b; /* Dark Slate background for inactive state */
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+/* Default icon color when OFF (Muted gray to avoid looking 'Active') */
+#dashboard-view .manual-pump-btn-small i {
+    color: #94a3b8; 
+    transition: all 0.3s ease;
+}
+
+/* Active Button State (When Pump is ON) - Green Glowing Effect */
+#dashboard-view .manual-pump-btn-small.pump-on {
+    background-color: #22c55e !important; /* Emerald Green */
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+}
+
+/* Icon color update for better contrast when the button is Green */
+#dashboard-view .manual-pump-btn-small.pump-on i {
+    color: #ffffff;
+}
+
+/* Disabled Button State (Automatically applied when System is in AUTO MODE) */
+#dashboard-view .manual-pump-btn-small:disabled {
+    background-color: #0f172a !important; /* Darker navy to indicate 'Locked' state */
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+
+/* Icon color for disabled state (Deep gray to show zero activity) */
+#dashboard-view .manual-pump-btn-small:disabled i {
+    color: #475569;
+}
+
+#dashboard-view .monitor-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+#dashboard-view .footer-tag {
+    flex: 1;
+    background: var(--primary-color);
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* select tank - SUPER COMPACT VERSION */
+.tank-select-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px; /* Binawasan ang gap sa label */
+    margin-bottom: 15px;
+    width: fit-content;
+    align-self: flex-start;
+}
+
+.tank-select-container label {
+    font-size: 0.7rem; /* Mas maliit na label */
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.tm-select-field {
+    /* Pinakamaliit na padding: 5px top/bottom, 30px sa right para sa arrow */
+    padding: 5px 30px 5px 10px; 
+    border-radius: 5px; 
+    border: 1px solid #cbd5e1;
+    background-color: #f8fafc;
+    font-size: 0.8rem; /* Mas maliit na text */
+    color: #1e293b;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    height: 32px; /* Fixed height para siguradong maliit */
+    transition: all 0.2s ease;
+    
+    /* Custom Arrow Adjustment */
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 12px;
+}
+
+.tm-select-field:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+/* =========================================
+   ANALYTICS DASHBOARD 
+========================================= */
+.analytics-container {
+    width: 100%;
+    max-width: 1150px; 
+    margin: 0 auto;    
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Binawasan natin mula 20px para mas dikit */
+    
+    /* ADD THIS: Para hindi lumubog sa baba ang insights */
+    height: auto;
+    min-height: calc(100vh - 100px); 
+    justify-content: flex-start; 
+}
+
+/* ===============================
+   1. SELECTOR BAR
+================================ */
+
+.ana-selector-bar {
+    background: #ffffff;
+    padding: 10px 18px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border: 1px solid #cbd5e1;
+    height: 65px;
+    flex-shrink: 0;
+}
+
+.selector-icon {
+    background: var(--primary-color);
+    color: #ffffff;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 8px rgba(0, 210, 255, 0.3);
+}
+
+.selector-content label {
+    font-size: 0.65rem;
+    color: #64748b;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: block;
+}
+
+.selector-content select {
+    border: none;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #1e293b;
+    background: transparent;
+    cursor: pointer;
+    outline: none;
+}
+
+/* ===============================
+   2. STATS ROW
+================================ */
+.ana-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns para sa stats */
+    gap: 15px;
+}
+.ana-stat-box {
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    border-radius: 12px;
+    color: #ffffff;
+    gap: 12px;
+}
+
+.stat-icon-wrapper {
+    font-size: 1.2rem;
+    opacity: 0.3;
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.box-label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.box-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin: -2px 0;
+}
+
+.box-sub {
+    font-size: 0.55rem;
+    opacity: 0.8;
+}
+
+.blue { background-color: #3b82f6; }
+.green { background-color: #10b981; }
+.purple { background-color: #8b5cf6; }
+.orange { background-color: #f59e0b; }
+
+/* ===============================
+   3. MIDDLE CHARTS
+================================ */
+
+.ana-charts-middle {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr; 
+    gap: 15px; /* Dagdagan ng gap */
+    height: auto; /* Gawing auto para sumunod sa content */
+}
+/* ===============================
+   4. BOTTOM CHART
+================================ */
+
+.ana-charts-bottom {
+    height: 300px;
+    flex: none;   
+    margin-bottom: 5px;
+}
+/* ===============================
+   5. CHART CARDS
+================================ */
+
+.ana-chart-card {
+    background: #ffffff;
+    padding: 15px; /* Binawasan ang padding */
+    border-radius: 15px;
+    border: 1px solid #cbd5e1;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    min-height: 350px; /* Pantay na base height */
+}
+.ana-chart-card h3 {
+    font-size: 0.95rem;
+    margin-bottom: 20px; 
+    color: #334155;
+}
+.canvas-container {
+    flex-grow: 1; /* Hayaan siyang mag-occupy ng space */
+    height: 250px; /* Binabaan natin para magkasya sa screen */
+    position: relative;
+    width: 100%;
+}
+/* ===============================
+   6. INSIGHTS BAR
+================================ */
+.ana-insights-bar {
+    background: #f0f9ff;
+    padding: 15px 25px; 
+    border-radius: 12px;
+    border-left: 8px solid var(--primary-color); 
+    width: 100%; 
+    margin-top: 10px; /* Binago mula -30px (dahil ito ang sanhi ng overlap) */
+    position: relative; 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.ana-insights-bar h4 {
+    font-size: 1rem; 
+    margin-bottom: 8px;
+    color: #0369a1;
+}
+
+.ana-insights-bar ul {
+    margin-left: 20px;
+    line-height: 1.6; 
+}
+
+
+/* =============================this is activity log part to begin=====================*/
+/* =========================================
+   ACTIVITY LOG - BOSS VIEW STYLES
+   ========================================= */
+
+.activity-container {
+    padding: 20px;
+    animation: fadeIn 0.5s ease;
+}
+
+.activity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.title-group h2 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.title-group p {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Filter Bar Styling */
+.filter-bar {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 15px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.search-box {
+    position: relative;
+    flex: 1;
+}
+
+.search-box i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px 10px 10px 35px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    outline: none;
+}
+
+.filter-dropdown {
+    padding: 8px 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    min-width: 150px;
+}
+
+/* Table Design */
+.log-table-container {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+}
+
+.boss-log-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.boss-log-table th {
+    background: #f8f9fa;
+    padding: 15px;
+    font-weight: 600;
+    color: #444;
+    border-bottom: 2px solid #eee;
+}
+
+.boss-log-table td {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.boss-log-table tr:hover {
+    background-color: #fcfcfc;
+}/* * STATUS PILLS - DYNAMIC COLOR MAPPING
+ * These classes are applied via JavaScript based on the raw status from Java.
+ */
+.status-pill {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: inline-block;
+    border: 1px solid transparent;
+}
+
+/* GREEN: Positive Actions & Active Monitoring */
+.status-pill.active,
+.status-pill.sent,
+.status-pill.success,
+.status-pill.updated,
+.status-pill.registration {
+    background-color: #e6f9ed;
+    color: #1a7f37;
+    border-color: #bdf2d0;
+}
+
+/* YELLOW/ORANGE: Operational States & Manual Triggers */
+.status-pill.running,
+.status-pill.user-op,
+.status-pill.manual-trigger,
+.status-pill.manual-stop,
+.status-pill.warning,
+.status-pill.configuration-update {
+    background-color: #fff9e6;
+    color: #9a6700;
+    border-color: #ffe8a3;
+}
+
+/* * CRITICAL STATES: Safety Interventions & System Errors 
+ * This category highlights automated safety shutoffs and critical hardware failures.
+ */
+.status-pill.manual-pump-triggered,
+.status-pill.safety-shutoff,
+.status-pill.critical,
+.status-pill.error,
+.status-pill.system_off,
+.status-pill.system-off { 
+    background-color: #ffebe9; /* Light red background for high-priority alerts */
+    color: #cf222e;            /* Deep red for high legibility */
+    border-color: #ffcfcc;     /* Border accent for visual separation */
+}
+/* GRAY: Fallback for Unknown Status */
+.status-pill.unknown {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    border-color: #d1d5db;
+}
+/* Summary Grid at the Bottom */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.summary-box {
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    transition: transform 0.3s ease;
+}
+
+.summary-box:hover {
+    transform: translateY(-5px);
+}
+
+.summary-box span {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.summary-box strong {
+    font-size: 1.5rem;
+}
+
+.success-box { background: #e6f9ed; color: #1a7f37; }
+.warning-box { background: #fff9e6; color: #9a6700; }
+.error-box { background: #ffebe9; color: #cf222e; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+    TANK MANAGEMENT SECTION
+    Description: Core styles for the dashboard listing and stats.
+   ============================================================ */
+
+.tm-container { 
+    padding: 25px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 25px; 
+    align-items: center; 
+}
+
+/* Master Width Alignment */
+.tm-dashboard-card, 
+.tm-cards-grid {
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* FIX: Dashboard card should not be a grid of 320px columns */
+.tm-dashboard-card { 
+    background: white; 
+    border-radius: 15px; 
+    padding: 25px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    display: block; 
+}
+
+.tm-header-row { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 25px; 
+}
+
+/* Stat Box Colors */
+.blue-bg   { background-color: rgba(28, 164, 227, 0.15); border: 1px solid rgba(28, 164, 227, 0.3); } 
+.purple-bg { background-color: rgba(174, 47, 237, 0.1); border: 1px solid rgba(174, 47, 237, 0.2); } 
+.green-bg  { background-color: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); } 
+.yellow-bg { background-color: rgba(251, 224, 143, 0.3); border: 1px solid rgba(251, 224, 143, 0.5); }
+
+.tm-stats-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    gap: 15px; 
+    margin: 20px 0; 
+}
+
+.tm-stat-box { 
+    padding: 20px; 
+    border-radius: 12px; 
+    display: flex; 
+    flex-direction: column;
+    transition: transform 0.2s ease;
+}
+
+.tm-stat-label { 
+    font-size: 0.75rem; 
+    font-weight: 800; 
+    color: #555; 
+    text-transform: uppercase; 
+}
+
+/* ============================================================
+    TANK CARDS GRID & COMPONENTS
+    ============================================================ */
+
+.tm-cards-grid {
+    display: grid;
+    /* This creates the side-by-side square tiles */
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+    gap: 25px;
+}
+
+.tm-card { 
+    background: white; 
+    border-radius: 20px; 
+    padding: 25px; 
+    border: 1px solid #eee; 
+    box-sizing: border-box; 
+    transition: transform 0.2s ease-in-out;
+    
+    /* Square shape logic */
+    aspect-ratio: 1 / 1; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+}
+
+.tm-card:hover { transform: translateY(-5px); }
+
+.tm-card-top {
+    display: flex;
+    flex-direction: column; 
+    gap: 5px;
+}
+
+/* Tank Name Style */
+.tm-card-top h3 {
+    font-size: 1.2rem;
+    margin: 5px 0;
+    color: #1e293b;
+    font-weight: 700;
+}
+
+/* Online/Offline Status Indicators */
+.tm-status-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tm-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+}
+.tm-dot.online { background: #22c55e; }
+.tm-dot.offline { background: #ef4444; }
+.online-text { color: #22c55e; font-weight: bold; }
+/* ADD THESE TWO LINES */
+.tm-dot.warning { background: #f59e0b; } /* Orange color for the dot */
+.warning-text { color: #f59e0b; font-weight: bold; } /* Orange color for the text */
+.offline-text { color: #ef4444; font-weight: bold; } /* Optional: text color for offline */
+
+/* Progress Bar & Level Display */
+.tm-progress-container { 
+    width: 100%; height: 14px; 
+    background: #f0f0f0; border-radius: 7px; 
+    margin: 15px 0; overflow: hidden; 
+}
+
+.tm-progress-container + div { 
+    text-align: center;
+    font-size: 1.8rem; /* Made slightly larger for the square look */
+    font-weight: 800; 
+    color: #0369a1;
+    margin: 5px 0;
+}
+
+.tm-progress-fill { 
+    height: 100%; background: #38bdf8; 
+    transition: width 0.5s ease;
+}
+
+.tm-mode-indicator { 
+    padding: 10px; background: #f9f9f9; 
+    border-radius: 8px; margin-bottom: 10px; 
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* Card Action Buttons - Grid for better square fit */
+.tm-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.tm-btn-edit { 
+    background: #e0f2fe; color: var(--primary-color);
+    border: none; padding: 12px; border-radius: 8px; 
+    cursor: pointer; font-weight: bold; 
+}
+
+.tm-btn-delete { 
+    background: #fee2e2; color: #dc2626; 
+    border: none; padding: 12px; border-radius: 8px; 
+    cursor: pointer; font-weight: bold;
+}
+
+/* ============================================================
+   MODAL, FORM, & SCANNER STYLES
+   ============================================================ */
+
+.tm-modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none; 
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(3px);
+}
+
+.tm-modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 95%;
+    max-width: 550px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    position: relative;
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+/* Scanner Area */
+#interactive-scanner {
+    width: 100%;
+    min-height: 250px;
+    background: #f8f9fa;
+    border: 2px dashed #007bff;
+    border-radius: 10px;
+    margin-top: 15px;
+    overflow: hidden;
+}
+
+/* Form Layouts */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.form-group { display: flex; flex-direction: column; gap: 8px; }
+.form-group.full-width { grid-column: span 2; }
+
+.form-group input, .form-group select {
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background-color: #f9fafb;
+}
+
+/* Toggle Switch Styles */
+.switch {
+    position: relative; display: inline-block;
+    width: 48px; height: 24px;
+}
+.slider.round { 
+    position: absolute; cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc; transition: .4s; border-radius: 34px;
+}
+.slider.round:before {
+    position: absolute; content: "";
+    height: 18px; width: 18px; left: 3px; bottom: 3px;
+    background-color: white; transition: .4s; border-radius: 50%;
+}
+input:checked + .slider { background-color: #22c55e; }
+input:checked + .slider:before { transform: translateX(24px); }
+
+/* Animation and Responsiveness */
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* --- Missing Layout & Button Styles --- */
+
+.tm-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.close-modal {
+    font-size: 28px;
+    cursor: pointer;
+    color: #999;
+}
+
+.modal-note {
+    grid-column: span 2;
+    background: #fff9db;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #856404;
+    margin: 10px 0;
+}
+
+.modal-actions {
+    grid-column: span 2;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+/* Button Styles */
+.btn-primary {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    background: #f1f3f5;
+    color: #495057;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Toggle Switch Layout */
+.toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 8px;
+    width: fit-content;
+}
+.tm-card.active {
+    border: 2px solid #007bff;
+    background-color: #f0f7ff;
+    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.15);
+}
+
+.tm-percent-text {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #0369a1;
+    margin: 5px 0;
+}
+
+/* ============================================================
+   MASTER SETTINGS STYLES
+   ============================================================ */
+
+/* Main container for settings elements */
+.settings-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+/* Individual setting cards */
+.settings-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border: 1px solid #edf2f7;
+    transition: background 0.3s ease, border-color 0.3s ease;
+    
+    /* ADD THESE TWO LINES */
+    width: 100%; 
+    box-sizing: border-box; 
+}
+
+/* Header Panel - The top-most title card */
+.header-panel {
+    border-left: 5px solid var(--primary-color);
+}
+
+.header-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px; /* Spacing for the slider row below the title */
+}
+
+.header-main-icon {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+}
+
+/* Appearance Palette Icon - Colorized for a creative look */
+.fa-palette {
+    color: #e91e63; /* Pink/Red color to stand out */
+}
+
+.header-text h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #1a202c;
+}
+
+/* Appearance Control - Theme slider alignment */
+.appearance-control {
+    display: flex;
+    justify-content: flex-start; /* Aligned to left to keep slider close to text */
+    align-items: center;
+    gap: 20px; /* Distance between label and slider */
+    padding-top: 10px;
+    border-top: 1px solid #f1f5f9;
+}
+
+/* RAINBOW COLOR SLIDER - The "nahihila" part */
+.theme-range-slider {
+    -webkit-appearance: none;
+    width: 160px;
+    height: 10px;
+    border-radius: 5px;
+    /* Rainbow gradient background */
+    background: linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+    outline: none;
+    cursor: pointer;
+}
+
+/* The slider handle (the thumb you drag) */
+.theme-range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease;
+}
+
+.theme-range-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+/* PASSWORD EYE FIXES - Ensures the eye is inside the input box */
+.password-wrapper {
+    position: relative; /* Anchor for the absolute positioned eye */
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.password-toggle-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%); /* Centers the eye vertically */
+    cursor: pointer;
+    color: #94a3b8;
+    z-index: 10;
+    transition: color 0.3s;
+}
+
+.password-toggle-icon:hover {
+    color: var(--primary-color);
+}
+
+/* Prevent text from overlapping the eye icon */
+.password-wrapper .custom-field {
+    padding-right: 45px;
+}
+
+/* Dual Channel Layout (Email & SMS) */
+.dual-channel-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Equal split like your Activity Log boxes */
+    gap: 20px;
+    width: 100%;
+}
+.channel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+/* ACCOUNT SECURITY STYLING:
+   Prevents the text insertion cursor (caret) from appearing on 
+   unique identifiers to signal to the user that the field is immutable.
+*/
+.locked-field {
+    cursor: default;         /* Arrow lang ang mouse, hindi magiging 'I' beam */
+    user-select: none;       /* Hindi pwedeng i-highlight yung text */
+    pointer-events: none;    /* Hindi pwedeng i-click or i-focus */
+    border-color: #ddd;      /* Optional: Slightly lighter border para "locked" look */
+}
+
+.channel-identity {
+    font-weight: 600;
+    color: #4a5568;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sms-green-icon {
+    color: #48bb78;
+}
+
+/* Input Styles */
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #718096;
+    margin-bottom: 8px;
+}
+
+.custom-field {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+    color: #1a202c;
+    box-sizing: border-box;
+}
+
+.custom-field:focus {
+    border-color: var(--primary-color);
+    background: #ffffff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Security Grid Layout */
+.security-form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* IMPORTANT INFORMATION PANEL - Colorized orange */
+.policy-panel {
+    background: #fffaf0; /* Light orange background */
+    border-left: 5px solid #ed8936; /* Vibrant orange border */
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.policy-panel h3 {
+    margin-top: 0;
+    font-size: 1.1rem;
+    color: #c05621; /* Dark orange text */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.policy-list {
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+.policy-list li {
+    margin-bottom: 10px;
+    color: #744210; /* Brownish text for readability */
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Save All Settings Button */
+.action-btn-save {
+    width: fit-content;
+    min-width: 200px;
+    padding: 12px 25px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 20px 0 20px auto; /* Moves button to the right */
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.action-btn-save:hover {
+    background-color: var(--primary-hover);;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+/* Entrance Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+/* Visibility Control for Navigation */
+.content-section {
+    display: block; /* Forced to block so you can see the settings now */
+    width: 100%;
+    margin: 0 auto;
+}

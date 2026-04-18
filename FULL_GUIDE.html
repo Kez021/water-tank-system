@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Complete Deployment + Prototype Guide</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:#0d1117;color:#e6edf3;line-height:1.7;}
+.page{max-width:960px;margin:0 auto;padding:40px 20px;}
+
+h1{font-size:2.2rem;color:#4a9eff;margin-bottom:8px;}
+.tagline{color:#8b949e;margin-bottom:48px;font-size:1rem;}
+
+/* ANSWER BOX */
+.answer-box{background:#111927;border:2px solid #4a9eff;border-radius:16px;padding:28px;margin-bottom:44px;}
+.answer-box h2{color:#4a9eff;font-size:1.1rem;margin-bottom:18px;}
+.qa{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid #21262d;}
+.qa:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.q{color:#f0a500;font-weight:700;margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;}
+.q::before{content:"Q";background:#f0a500;color:#000;border-radius:50%;width:22px;height:22px;min-width:22px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;margin-top:2px;}
+.a{padding-left:30px;color:#c9d1d9;}
+.a strong{color:#e6edf3;}
+.a code{background:#21262d;padding:2px 7px;border-radius:4px;color:#79c0ff;font-family:monospace;font-size:.88rem;}
+
+/* PHASE BAR */
+.phase-bar{background:linear-gradient(90deg,#1a2540,#111927);border-left:5px solid #4a9eff;border-radius:0 12px 12px 0;padding:18px 24px;margin:44px 0 16px;display:flex;align-items:center;gap:16px;}
+.phase-num{background:#4a9eff;color:#fff;font-weight:900;border-radius:8px;padding:6px 14px;font-size:1rem;white-space:nowrap;}
+.phase-text h2{font-size:1.2rem;color:#fff;margin-bottom:2px;}
+.phase-text p{color:#8b949e;font-size:.88rem;}
+
+/* STEP CARD */
+.step{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;margin-bottom:14px;}
+.step-header{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.step-num{background:#4a9eff;color:#fff;border-radius:50%;width:34px;height:34px;min-width:34px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;}
+.step-header h3{font-size:1rem;color:#fff;}
+.step p{color:#c9d1d9;font-size:.92rem;margin-bottom:8px;}
+.step ol,.step ul{padding-left:22px;color:#c9d1d9;font-size:.92rem;}
+.step ol li,.step ul li{margin-bottom:7px;}
+.step ol li strong,.step ul li strong{color:#e6edf3;}
+
+/* CODE */
+pre{background:#010409;border:1px solid #30363d;border-radius:10px;padding:18px;margin:12px 0;font-family:'Courier New',monospace;font-size:.84rem;overflow-x:auto;white-space:pre;}
+.cm{color:#8b949e;}
+.kw{color:#ff7b72;}
+.str{color:#a5d6ff;}
+.val{color:#79c0ff;}
+.hi{background:#1f2d1f;border-left:3px solid #3fb950;display:block;margin:-2px -18px;padding:2px 18px;}
+.hi-r{background:#2d1f1f;border-left:3px solid #f78166;display:block;margin:-2px -18px;padding:2px 18px;}
+
+/* BOXES */
+.warn{background:#1f1409;border:1px solid #d29922;border-radius:10px;padding:16px;margin:12px 0;}
+.warn-t{color:#d29922;font-weight:700;margin-bottom:6px;font-size:.92rem;}
+.good{background:#0d1f0d;border:1px solid #3fb950;border-radius:10px;padding:16px;margin:12px 0;}
+.good-t{color:#3fb950;font-weight:700;margin-bottom:6px;font-size:.92rem;}
+.info{background:#0d1827;border:1px solid #4a9eff;border-radius:10px;padding:16px;margin:12px 0;}
+.info-t{color:#4a9eff;font-weight:700;margin-bottom:6px;font-size:.92rem;}
+
+.note{color:#c9d1d9;font-size:.88rem;line-height:1.6;}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.88rem;}
+th{background:#21262d;color:#8b949e;padding:10px 14px;text-align:left;border:1px solid #30363d;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;}
+td{padding:10px 14px;border:1px solid #30363d;color:#c9d1d9;vertical-align:top;}
+tr:nth-child(even) td{background:#0d1117;}
+.g{color:#3fb950;font-weight:700;}
+.r{color:#f78166;}
+.b{color:#4a9eff;}
+.y{color:#d29922;}
+
+/* WIRING TABLE */
+.wire{border-radius:12px;overflow:hidden;margin:14px 0;}
+.wire th{background:#21262d;padding:12px 16px;}
+.wire td{padding:12px 16px;}
+.pin{display:inline-block;background:#21262d;border:1px solid #444;border-radius:5px;padding:2px 8px;font-family:monospace;font-size:.82rem;color:#79c0ff;}
+.wire-color{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:middle;margin-right:6px;}
+
+/* DIAGRAM */
+.diagram{background:#010409;border:1px solid #30363d;border-radius:12px;padding:24px;margin:14px 0;font-family:monospace;font-size:.82rem;line-height:1.8;overflow-x:auto;}
+.d-title{color:#4a9eff;font-weight:700;margin-bottom:12px;font-family:'Segoe UI',sans-serif;font-size:.9rem;}
+.d-esp{color:#79c0ff;}
+.d-sensor{color:#3fb950;}
+.d-pump{color:#f78166;}
+.d-power{color:#d29922;}
+.d-gnd{color:#8b949e;}
+.d-line{color:#444;}
+
+/* CHECKLIST */
+.checklist{list-style:none;padding:0;margin:12px 0;}
+.checklist li{padding:8px 0;border-bottom:1px solid #21262d;display:flex;align-items:flex-start;gap:10px;font-size:.92rem;color:#c9d1d9;}
+.checklist li:last-child{border-bottom:none;}
+.check{color:#3fb950;font-size:1rem;margin-top:1px;}
+.box{width:18px;height:18px;border:2px solid #30363d;border-radius:4px;min-width:18px;}
+
+/* COMPONENT BOX */
+.comp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:14px 0;}
+.comp-card{background:#0d1117;border:1px solid #30363d;border-radius:10px;padding:14px;}
+.comp-name{color:#fff;font-weight:600;font-size:.9rem;margin-bottom:4px;}
+.comp-role{color:#8b949e;font-size:.82rem;line-height:1.5;}
+.comp-pin{color:#79c0ff;font-size:.8rem;margin-top:6px;font-family:monospace;}
+
+/* FLOW */
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:14px 0;}
+.flow-box{background:#1a2540;border:1px solid #4a9eff;border-radius:8px;padding:8px 14px;font-size:.84rem;color:#e6edf3;text-align:center;}
+.flow-arrow{color:#4a9eff;font-size:1.2rem;}
+
+/* URL BOX */
+.url-box{background:#010409;border:1px solid #3fb950;border-radius:8px;padding:14px;margin:10px 0;font-family:monospace;font-size:.88rem;}
+.url-label{color:#8b949e;font-size:.78rem;margin-bottom:4px;}
+.url-val{color:#3fb950;}
+
+/* WARNING big */
+.big-warn{background:#1f0f09;border:2px solid #f78166;border-radius:12px;padding:20px;margin:16px 0;}
+.big-warn-t{color:#f78166;font-weight:700;font-size:1rem;margin-bottom:8px;}
+
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>🚰 Complete Guide</h1>
+<p class="tagline">Deploy Online (GitHub + Railway + Netlify) + Prototype Wiring (ESP32 + HC-SR04 + Pump)</p>
+
+<!-- ===================== QUESTIONS FIRST ===================== -->
+<div class="answer-box">
+<h2>❓ Your Questions — Answered Simply</h2>
+
+<div class="qa">
+  <div class="q">Do I lose my H2 database when I deploy online? Can I use BOTH local and online?</div>
+  <div class="a">
+    <strong>YES you can use both — and your code already supports this automatically.</strong><br><br>
+    • <strong>H2 (local)</strong> = file on your laptop. Used when IntelliJ is running. For testing only.<br>
+    • <strong>PostgreSQL (Railway)</strong> = database in the cloud. Used when deployed online. Permanent, accessible anywhere.<br><br>
+    They are <strong>separate databases</strong> — not synced. What you register locally stays local. What you register online stays online permanently.<br><br>
+    Your <code>application.properties</code> auto-detects which one to use:<br>
+    → On laptop: uses H2 automatically (no setup)<br>
+    → On Railway: uses PostgreSQL automatically (Railway sets it up)
+  </div>
+</div>
+
+<div class="qa">
+  <div class="q">Will the ESP32 prototype still connect after deploying online?</div>
+  <div class="a">
+    <strong>YES — 100% compatible. It gets BETTER after deployment.</strong><br><br>
+    Right now ESP32 sends data to your laptop IP (e.g. <code>192.168.1.5:8080</code>) — needs same WiFi.<br>
+    After Railway deployment, ESP32 sends to your Railway URL — works on <strong>any WiFi anywhere</strong>.<br>
+    The ESP32 just needs internet. It doesn't care if the server is your laptop or a cloud server.
+  </div>
+</div>
+
+<div class="qa">
+  <div class="q">Will the prototype physically connect with the website system?</div>
+  <div class="a">
+    <strong>YES — this is exactly what your system is designed to do:</strong><br><br>
+    HC-SR04 sensor → measures distance to water → ESP32 calculates water level %<br>
+    → ESP32 sends level to Spring Boot (every 5 seconds)<br>
+    → Spring Boot decides: pump ON or OFF based on thresholds<br>
+    → ESP32 reads the decision → activates relay → pump turns ON or OFF<br>
+    → Your website dashboard shows live water level in real time
+  </div>
+</div>
+
+<div class="qa">
+  <div class="q">Do I need 2 tanks for the demo?</div>
+  <div class="a">
+    <strong>YES — for a proper demo you need 2 small containers:</strong><br>
+    • <strong>Tank 1 (main tank)</strong> — the one with water. HC-SR04 sits on top and measures water level.<br>
+    • <strong>Tank 2 (reservoir/source)</strong> — smaller container below or beside it. Pump is submerged here and pumps water UP to Tank 1.<br><br>
+    This shows the full auto-refill cycle: level drops → pump turns on → water fills back up → pump turns off.
+  </div>
+</div>
+</div>
+
+<!-- ===================== PHASE 1: GITHUB ===================== -->
+<div class="phase-bar">
+  <div class="phase-num">PHASE 1</div>
+  <div class="phase-text">
+    <h2>📁 GitHub — Push Your Code</h2>
+    <p>Free. Stores your code online so Railway can deploy it.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">1</div><h3>Create GitHub Account</h3></div>
+  <ol>
+    <li>Go to <strong>github.com</strong> → click <strong>Sign up</strong></li>
+    <li>Use your email → create username and password → verify email</li>
+    <li>You're in. GitHub is now ready.</li>
+  </ol>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">2</div><h3>Create a New Repository</h3></div>
+  <ol>
+    <li>Click the <strong>+</strong> button at the top right → <strong>New repository</strong></li>
+    <li>Repository name: <code>water-tank-system</code></li>
+    <li>Set to: <strong>Public</strong></li>
+    <li>Do NOT check "Add README" (leave everything unchecked)</li>
+    <li>Click <strong>Create repository</strong></li>
+    <li>You'll see a page with setup instructions — leave it open, you'll need the URL</li>
+  </ol>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">3</div><h3>Install Git on your laptop (if not yet installed)</h3></div>
+  <ol>
+    <li>Go to <strong>git-scm.com/download/win</strong></li>
+    <li>Download and install Git (click Next on everything, defaults are fine)</li>
+    <li>After install, open <strong>Command Prompt</strong> → type <code>git --version</code> → should show a version number</li>
+  </ol>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">4</div><h3>Push your Backend to GitHub</h3></div>
+  <p>Open <strong>Command Prompt</strong> and type these commands one by one. Press Enter after each.</p>
+  <p>Navigate to your Spring Boot project folder first:</p>
+<pre><span class="cm"># Navigate to the folder that contains pom.xml</span>
+cd Desktop\final-project\Backend_Java_Spring\system\system</pre>
+  <p>Then run these Git commands:</p>
+<pre>git init
+git add .
+git commit -m "Initial commit - Water Tank System"
+git branch -M main
+git remote add origin https://github.com/YOUR_USERNAME/water-tank-system.git
+git push -u origin main</pre>
+  <div class="warn">
+    <div class="warn-t">⚠️ Replace YOUR_USERNAME with your actual GitHub username</div>
+    <span class="note">When it asks for password — GitHub no longer accepts passwords in terminal. Instead:<br>
+    Go to GitHub → click your profile photo → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token → check "repo" → Generate → <strong>copy the token</strong> → paste it as the password (you won't see it typing, that's normal)</span>
+  </div>
+  <div class="good">
+    <div class="good-t">✅ Success — what you should see</div>
+    <span class="note">Go to github.com/YOUR_USERNAME/water-tank-system — you should see all your Java files listed there.</span>
+  </div>
+</div>
+
+<!-- ===================== PHASE 2: RAILWAY ===================== -->
+<div class="phase-bar">
+  <div class="phase-num">PHASE 2</div>
+  <div class="phase-text">
+    <h2>🚂 Railway — Deploy Backend + PostgreSQL Database</h2>
+    <p>Free tier. Hosts your Spring Boot server + creates PostgreSQL database online.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">5</div><h3>Create Railway Account</h3></div>
+  <ol>
+    <li>Go to <strong>railway.app</strong></li>
+    <li>Click <strong>Login with GitHub</strong> (use the same GitHub account you just made)</li>
+    <li>Authorize Railway to access GitHub</li>
+    <li>You're in Railway dashboard</li>
+  </ol>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">6</div><h3>Deploy your Spring Boot from GitHub</h3></div>
+  <ol>
+    <li>Click <strong>New Project</strong></li>
+    <li>Click <strong>Deploy from GitHub repo</strong></li>
+    <li>Find and select <strong>water-tank-system</strong></li>
+    <li>Railway auto-detects Spring Boot → starts building automatically</li>
+    <li>Wait 3–5 minutes. You'll see the build logs scrolling.</li>
+  </ol>
+  <div class="warn">
+    <div class="warn-t">⚠️ If build fails with "BUILD FAILED"</div>
+    <span class="note">Check the logs — usually it's because Railway can't find pom.xml. Fix: In Railway → your service → Settings → look for "Root Directory" → set it to the folder path where pom.xml is located.</span>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">7</div><h3>Add PostgreSQL Database (online database)</h3></div>
+  <ol>
+    <li>Inside your Railway project, click <strong>+ New</strong> (or the + button)</li>
+    <li>Click <strong>Database</strong> → click <strong>Add PostgreSQL</strong></li>
+    <li>Railway creates the database automatically in about 30 seconds</li>
+    <li>Railway also automatically sets the <code>DATABASE_URL</code> environment variable — your Spring Boot picks this up automatically</li>
+    <li><strong>You don't need to do anything else for the database</strong></li>
+  </ol>
+  <div class="good">
+    <div class="good-t">✅ How the auto-detection works (already in your code)</div>
+    <span class="note">Your <code>application.properties</code> has this line:<br>
+    <code>spring.datasource.url=${DATABASE_URL:jdbc:h2:file:./data/tank_db}</code><br><br>
+    This means: if <code>DATABASE_URL</code> exists (Railway sets it) → use PostgreSQL online<br>
+    If not (your laptop) → use H2 local file<br>
+    <strong>Zero changes needed. It just works.</strong></span>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">8</div><h3>Get your Railway URL</h3></div>
+  <ol>
+    <li>Go to your Railway service (the Spring Boot one, not the database)</li>
+    <li>Click on <strong>Settings</strong> tab</li>
+    <li>Look for <strong>Domains</strong> section → click <strong>Generate Domain</strong></li>
+    <li>You get a URL like: <code>water-tank-xxxx.up.railway.app</code></li>
+    <li><strong>Copy this URL — you need it in the next steps</strong></li>
+  </ol>
+  <div class="info">
+    <div class="info-t">🧪 Test your backend is live</div>
+    <span class="note">Open browser → go to: <code>https://water-tank-xxxx.up.railway.app/api/admin/stats</code><br>
+    You should see: <code>{"totalUsers":0,"totalTanks":0,"onlineTanks":0,"openTickets":0}</code><br>
+    This means your backend is running and database is connected online!</span>
+  </div>
+</div>
+
+<!-- ===================== PHASE 3: UPDATE URLS ===================== -->
+<div class="phase-bar">
+  <div class="phase-num">PHASE 3</div>
+  <div class="phase-text">
+    <h2>🔗 Update Your Railway URL — 4 Places</h2>
+    <p>Now that you have your Railway URL, update it in your files.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">9</div><h3>Update RAILWAY_URL in Frontend files</h3></div>
+  <p>Open these files in VS Code and change <strong>line 1</strong> in each:</p>
+
+  <p><strong>File 1: Frontend_Standalone/dashboard.js</strong></p>
+<pre><span class="cm">// CHANGE THIS (line 6):</span>
+<span class="hi-r">const RAILWAY_URL = "http://localhost:8080";</span>
+<span class="cm">// TO THIS (your actual Railway URL):</span>
+<span class="hi">const RAILWAY_URL = "https://water-tank-xxxx.up.railway.app";</span></pre>
+
+  <p><strong>File 2: Frontend_Standalone/app.js</strong></p>
+<pre><span class="cm">// CHANGE THIS (line 8):</span>
+<span class="hi-r">const RAILWAY_URL = "http://localhost:8080";</span>
+<span class="cm">// TO THIS:</span>
+<span class="hi">const RAILWAY_URL = "https://water-tank-xxxx.up.railway.app";</span></pre>
+
+  <p><strong>File 3: Admin_Dashboard/admin.js</strong></p>
+<pre><span class="cm">// CHANGE THIS (line 10):</span>
+<span class="hi-r">const RAILWAY_URL = "http://localhost:8080";</span>
+<span class="cm">// TO THIS:</span>
+<span class="hi">const RAILWAY_URL = "https://water-tank-xxxx.up.railway.app";</span></pre>
+
+  <p><strong>File 4: main.cpp (ESP32)</strong></p>
+<pre><span class="cm">// CHANGE THIS (line 17):</span>
+<span class="hi-r">const char* serverUrl = "http://YOUR_LAPTOP_IP:8080/api/tank/sync";</span>
+<span class="cm">// TO THIS:</span>
+<span class="hi">const char* serverUrl = "https://water-tank-xxxx.up.railway.app/api/tank/sync";</span></pre>
+
+  <div class="warn">
+    <div class="warn-t">⚠️ Replace water-tank-xxxx with your actual Railway domain</div>
+    <span class="note">Your Railway URL is unique to you. Copy it exactly from Railway dashboard → Settings → Domains.</span>
+  </div>
+</div>
+
+<!-- ===================== PHASE 4: NETLIFY ===================== -->
+<div class="phase-bar">
+  <div class="phase-num">PHASE 4</div>
+  <div class="phase-text">
+    <h2>🌐 Netlify — Deploy Frontend + Admin Dashboard</h2>
+    <p>Free. Hosts your HTML/CSS/JS website online with HTTPS (fixes QR camera too).</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">10</div><h3>Deploy User Frontend on Netlify</h3></div>
+  <ol>
+    <li>Go to <strong>netlify.com</strong> → Sign up free (use GitHub login)</li>
+    <li>After login you see the dashboard with a big dotted area</li>
+    <li>Open your file explorer → navigate to <code>final-project/Frontend_Standalone</code></li>
+    <li><strong>Drag the entire Frontend_Standalone folder</strong> onto the Netlify dashboard</li>
+    <li>Netlify uploads and deploys in about 30 seconds</li>
+    <li>You get a URL like: <code>https://amazing-water-tank.netlify.app</code></li>
+  </ol>
+  <div class="good">
+    <div class="good-t">✅ Bonus: QR Scanner now works on ALL phones</div>
+    <span class="note">Netlify gives you HTTPS automatically. Camera access requires HTTPS. So after deploying to Netlify, the QR scanner works on every phone without any extra settings.</span>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">11</div><h3>Deploy Admin Dashboard on Netlify (separate site)</h3></div>
+  <ol>
+    <li>Back in Netlify dashboard → click <strong>Add new site</strong> → <strong>Deploy manually</strong></li>
+    <li>Drag the <strong>Admin_Dashboard</strong> folder onto Netlify</li>
+    <li>You get a second URL like: <code>https://tank-admin-panel.netlify.app</code></li>
+    <li>Open it → login with: username <code>admin</code> / password <code>tank@admin2024</code></li>
+  </ol>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">12</div><h3>Re-flash ESP32 with the new Railway URL</h3></div>
+  <ol>
+    <li>Connect ESP32 to laptop via USB</li>
+    <li>Open VS Code → open <code>final-project</code> folder</li>
+    <li>Open <code>main.cpp</code> → confirm the Railway URL is updated (Step 9)</li>
+    <li>Click the <strong>→ Upload</strong> button at the bottom of VS Code (PlatformIO toolbar)</li>
+    <li>Wait for "SUCCESS" message</li>
+    <li>Open Serial Monitor → set baud to 115200</li>
+    <li>You should see: <code>Sync OK | Dist: 24.5cm | Level: 67.2% | Cmd: AUTO_OFF</code></li>
+  </ol>
+  <div class="good">
+    <div class="good-t">✅ After this — ESP32 works on ANY WiFi anywhere</div>
+    <span class="note">Your ESP32 no longer needs to be on the same WiFi as your laptop. It connects directly to Railway 24/7. Take it anywhere with WiFi and it still syncs to your online system.</span>
+  </div>
+</div>
+
+<!-- ===================== PHASE 5: PROTOTYPE ===================== -->
+<div class="phase-bar">
+  <div class="phase-num">PHASE 5</div>
+  <div class="phase-text">
+    <h2>🔧 Prototype Wiring — ESP32 + HC-SR04 + Pump</h2>
+    <p>How to physically connect all your components together</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">13</div><h3>Understand your components and what each does</h3></div>
+  <div class="comp-grid">
+    <div class="comp-card">
+      <div class="comp-name">🧠 ESP32 DevKit V1</div>
+      <div class="comp-role">The brain. Runs your main.cpp code. Reads sensor, controls pump, sends data to server via WiFi.</div>
+      <div class="comp-pin">Powers from USB power bank (5V)</div>
+    </div>
+    <div class="comp-card">
+      <div class="comp-name">📡 HC-SR04 Ultrasonic Sensor</div>
+      <div class="comp-role">Measures distance from sensor to water surface. Mounted at the TOP of Tank 1 pointing down.</div>
+      <div class="comp-pin">VCC=5V, GND, TRIG=GPIO5, ECHO=GPIO18</div>
+    </div>
+    <div class="comp-card">
+      <div class="comp-name">💧 12V Submersible Pump</div>
+      <div class="comp-role">Submerged in Tank 2 (source). Pumps water up to Tank 1 when level is low. Controlled by TIP120.</div>
+      <div class="comp-pin">Controlled via TIP120 transistor from GPIO19</div>
+    </div>
+    <div class="comp-card">
+      <div class="comp-name">⚡ TIP120 NPN Transistor</div>
+      <div class="comp-role">Acts as a switch between ESP32 (3.3V signal) and the pump (12V). ESP32 cannot power pump directly.</div>
+      <div class="comp-pin">Base=GPIO19 via 1kΩ resistor, Collector=pump(-), Emitter=GND</div>
+    </div>
+    <div class="comp-card">
+      <div class="comp-name">🔋 Power Bank (5V)</div>
+      <div class="comp-role">Powers the ESP32 via Micro USB. Also powers HC-SR04 via 5V pin from ESP32.</div>
+      <div class="comp-pin">Connect to ESP32 Micro USB port</div>
+    </div>
+    <div class="comp-card">
+      <div class="comp-name">🔌 12V Power Source for Pump</div>
+      <div class="comp-role">Separate 12V supply for the pump. Can be a 12V adapter or 8x AA batteries. SEPARATE from ESP32 power.</div>
+      <div class="comp-pin">12V(+) → pump(+), 12V(-) → TIP120 emitter → GND</div>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">14</div><h3>2-Tank Setup Explanation</h3></div>
+  <div class="diagram">
+<div class="d-title">🏗️ Physical Layout — Side View</div>
+<span class="d-sensor">    [HC-SR04 sensor on lid]
+         ↕ measures distance
+    ┌─────────────────┐  ← Tank 1 (MAIN TANK)
+    │  WATER LEVEL    │    Monitor this tank's level
+    │  ~~~~~~~~~~~~~  │    Pump fills this from Tank 2
+    │                 │
+    └─────────────────┘
+           │
+    (water flows via tube/pipe when pump ON)
+           │
+    ┌──────────────┐  ← Tank 2 (RESERVOIR / SOURCE)
+    │  💧 water    │    Smaller container
+    │  [====PUMP===]│    Pump submerged here
+    └──────────────┘
+                        ESP32 + breadboard + TIP120
+                        mounted on Sintra board nearby</span>
+  </div>
+  <div class="info">
+    <div class="info-t">💡 Why 2 tanks?</div>
+    <span class="note">
+    Tank 1 = the tank being monitored. Water level drops as it's "used" (you can manually drain it to simulate usage).<br>
+    Tank 2 = the water source. Pump sits here and pushes water up a tube into Tank 1.<br>
+    When Tank 1 level drops below your threshold → ESP32 gets AUTO_ON from server → TIP120 switches on → pump activates → water flows from Tank 2 to Tank 1 → level rises → ESP32 gets AUTO_OFF → pump stops.<br><br>
+    For your small demo: use plastic food containers or bottles. Even 1-liter bottles work!
+    </span>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">15</div><h3>Complete Wiring Diagram — Step by Step</h3></div>
+
+  <p><strong>Part A — HC-SR04 Ultrasonic Sensor to ESP32</strong></p>
+  <table class="wire">
+    <tr><th>HC-SR04 Pin</th><th>Connect to</th><th>Wire Color (suggestion)</th><th>Why</th></tr>
+    <tr><td><span class="pin">VCC</span></td><td><span class="pin">ESP32 VIN or 5V pin</span></td><td><span class="wire-color" style="background:red;"></span> Red</td><td>Power for sensor (needs 5V)</td></tr>
+    <tr><td><span class="pin">GND</span></td><td><span class="pin">ESP32 GND</span></td><td><span class="wire-color" style="background:#555;"></span> Black</td><td>Ground</td></tr>
+    <tr><td><span class="pin">TRIG</span></td><td><span class="pin">ESP32 GPIO 5</span></td><td><span class="wire-color" style="background:#3fb950;"></span> Green</td><td>Trigger pulse — ESP32 sends signal to sensor</td></tr>
+    <tr><td><span class="pin">ECHO</span></td><td><span class="pin">ESP32 GPIO 18</span></td><td><span class="wire-color" style="background:#4a9eff;"></span> Blue</td><td>Echo — sensor returns pulse to ESP32</td></tr>
+  </table>
+
+  <div class="warn">
+    <div class="warn-t">⚠️ HC-SR04 ECHO pin is 5V — ESP32 is 3.3V!</div>
+    <span class="note">The ESP32 GPIO pins are 3.3V tolerant only. The HC-SR04 ECHO pin outputs 5V.<br>
+    <strong>Simple fix:</strong> Use a voltage divider between ECHO and GPIO18:<br>
+    ECHO → 1kΩ resistor → GPIO18 → 2kΩ resistor → GND<br>
+    OR use a logic level converter module (cheaper than a damaged ESP32!)<br>
+    <strong>Many builders skip this and it works — but long-term it can damage the ESP32 GPIO.</strong></span>
+  </div>
+
+  <p style="margin-top:16px;"><strong>Part B — TIP120 Transistor for Pump Control</strong></p>
+  <div class="info">
+    <div class="info-t">📌 TIP120 has 3 legs — from left to right when facing flat side: Base, Collector, Emitter</div>
+  </div>
+  <table class="wire">
+    <tr><th>TIP120 Leg</th><th>Connect to</th><th>Notes</th></tr>
+    <tr><td><span class="pin">Base (B)</span></td><td><span class="pin">ESP32 GPIO 19</span> via 1kΩ resistor</td><td>Control signal from ESP32. The resistor protects GPIO19.</td></tr>
+    <tr><td><span class="pin">Collector (C)</span></td><td><span class="pin">Pump negative (-) wire</span></td><td>Switch side — current flows through here to pump</td></tr>
+    <tr><td><span class="pin">Emitter (E)</span></td><td><span class="pin">Common GND</span></td><td>Must connect to SAME ground as 12V supply and ESP32</td></tr>
+  </table>
+
+  <p style="margin-top:16px;"><strong>Part C — Pump Power Connections</strong></p>
+  <table class="wire">
+    <tr><th>Wire</th><th>Connect to</th><th>Notes</th></tr>
+    <tr><td>Pump <span class="pin">positive (+)</span></td><td>12V power supply <span class="pin">positive (+)</span></td><td>Direct connection — always has power when supply is on</td></tr>
+    <tr><td>Pump <span class="pin">negative (-)</span></td><td>TIP120 <span class="pin">Collector</span></td><td>TIP120 opens/closes this circuit based on GPIO19</td></tr>
+    <tr><td>12V supply <span class="pin">negative (−)</span></td><td>TIP120 <span class="pin">Emitter</span> AND ESP32 <span class="pin">GND</span></td><td>All grounds must be connected together (common GND)</td></tr>
+  </table>
+
+  <div class="warn">
+    <div class="warn-t">⚠️ Add a Flyback Diode across the pump</div>
+    <span class="note">Pumps are motors — they create voltage spikes when turned off that can damage the TIP120.<br>
+    Connect a <strong>1N4007 diode</strong> across the pump: Cathode (stripe) to pump(+), Anode to pump(−).<br>
+    This diode costs ₱5 and saves your transistor and ESP32.</span>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">16</div><h3>Full Circuit Diagram (Text View)</h3></div>
+  <div class="diagram">
+<div class="d-title">Complete Wiring — Breadboard Layout</div>
+
+<span class="d-power">POWER BANK (5V)
+    ├── Micro USB → ESP32 (powers ESP32)</span>
+
+<span class="d-esp">ESP32 DevKit V1
+    ├── VIN / 5V ──────────────── HC-SR04 VCC</span>
+<span class="d-gnd">    ├── GND ────────────────────── HC-SR04 GND
+    │                          ── TIP120 Emitter
+    │                          ── 12V Supply (−)</span>
+<span class="d-sensor">    ├── GPIO  5 (D5) ───────────── HC-SR04 TRIG
+    ├── GPIO 18 (D18) ──[2kΩ]── HC-SR04 ECHO
+    │             └───[1kΩ]──── GND  (voltage divider)</span>
+<span class="d-pump">    └── GPIO 19 (D19) ──[1kΩ]── TIP120 Base</span>
+
+<span class="d-sensor">HC-SR04 (mounted top of Tank 1, pointing DOWN into water)
+    ├── VCC  → ESP32 5V
+    ├── GND  → ESP32 GND
+    ├── TRIG → ESP32 GPIO 5
+    └── ECHO → voltage divider → ESP32 GPIO 18</span>
+
+<span class="d-pump">TIP120 Transistor (on breadboard)
+    ├── Base     ← GPIO 19 via 1kΩ resistor
+    ├── Collector → Pump (−) wire
+    └── Emitter   → Common GND</span>
+
+<span class="d-pump">1N4007 Diode (across pump motor for protection)
+    ├── Cathode (stripe) → Pump (+)
+    └── Anode            → Pump (−) / TIP120 Collector</span>
+
+<span class="d-power">12V POWER SUPPLY (for pump only)
+    ├── (+) → Pump (+) wire
+    └── (−) → TIP120 Emitter = Common GND</span>
+
+<span class="d-pump">12V Submersible Pump (inside Tank 2 — the reservoir)
+    ├── (+) wire → 12V supply (+)
+    └── (−) wire → TIP120 Collector</span>
+
+<span class="d-sensor">Rubber tube / pipe
+    └── From pump outlet → into Tank 1 (main tank)
+        Water flows from Tank 2 to Tank 1 when pump ON</span>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">17</div><h3>Physical Assembly on Sintra Board</h3></div>
+  <ol>
+    <li><strong>Sintra board</strong> — lay it flat, this is your base. Attach everything to it.</li>
+    <li><strong>Tank 1 (main tank)</strong> — place on the board. Cut a small hole in the lid for the HC-SR04 sensor. Mount HC-SR04 inside the lid pointing straight down at the water.</li>
+    <li><strong>Tank 2 (reservoir)</strong> — place beside or below Tank 1. Submerge the pump inside. Run a tube from pump outlet up into Tank 1.</li>
+    <li><strong>Breadboard</strong> — mount with double-sided tape or screws on the Sintra board. Place TIP120, resistors, diode here.</li>
+    <li><strong>ESP32</strong> — place on the breadboard or beside it. Connect via jumper wires.</li>
+    <li><strong>Power bank</strong> — connect Micro USB cable from power bank to ESP32.</li>
+    <li><strong>Project box / acrylic case</strong> — optionally cover the electronics to make it look clean for demo.</li>
+  </ol>
+  <div class="info">
+    <div class="info-t">💡 Pro tip for neat demo</div>
+    <span class="note">Use cable ties or tape to organize all wires. Label each wire with a small piece of tape and a pen. Judges/professors appreciate neat, organized prototypes as much as working ones.</span>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">18</div><h3>How everything works together — the full flow</h3></div>
+  <div class="flow">
+    <div class="flow-box">HC-SR04<br>measures distance</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">ESP32<br>calculates level %</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">ESP32 POSTs<br>to Railway server</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">Spring Boot<br>decides pump command</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">Response: AUTO_ON<br>or AUTO_OFF</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">ESP32 sets<br>GPIO19 HIGH/LOW</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">TIP120 switches<br>pump ON or OFF</div>
+  </div>
+  <div class="flow" style="margin-top:8px;">
+    <div class="flow-box">Dashboard<br>(Netlify)</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">Fetches from<br>Railway API</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">Shows live level,<br>pump status, logs</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">User can set<br>thresholds manually</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">Next ESP32 sync<br>gets new settings</div>
+  </div>
+</div>
+
+<!-- ===================== PHASE 6: CHECKLIST ===================== -->
+<div class="phase-bar">
+  <div class="phase-num">PHASE 6</div>
+  <div class="phase-text">
+    <h2>✅ Final Checklist — Test Everything</h2>
+    <p>Go through this before your demo</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">19</div><h3>Test checklist — tick each one</h3></div>
+  <ul class="checklist">
+    <li><span class="box"></span> Railway backend responds: visit <code>https://your-railway-url.up.railway.app/api/admin/stats</code> → shows JSON</li>
+    <li><span class="box"></span> Netlify frontend loads: visit your Netlify URL → login page shows</li>
+    <li><span class="box"></span> Register a new user on the Netlify site → works without error</li>
+    <li><span class="box"></span> Login works → dashboard shows</li>
+    <li><span class="box"></span> ESP32 Serial Monitor shows "Sync OK" → backend is receiving data</li>
+    <li><span class="box"></span> Dashboard shows live water level number changing</li>
+    <li><span class="box"></span> Pour water into Tank 1 → level goes up on dashboard</li>
+    <li><span class="box"></span> Drain water from Tank 1 below threshold → pump turns ON (you hear it)</li>
+    <li><span class="box"></span> Tank 1 fills up above upper threshold → pump turns OFF</li>
+    <li><span class="box"></span> Admin Dashboard shows the registered user and their tank</li>
+    <li><span class="box"></span> Click "Need Help?" in dashboard sidebar → submit a test ticket → appears in Admin Dashboard</li>
+    <li><span class="box"></span> Safety Tips sidebar → shows maintenance tips</li>
+    <li><span class="box"></span> Email alert received when tank goes below low threshold</li>
+    <li><span class="box"></span> Forgot password OTP email works</li>
+  </ul>
+</div>
+
+<!-- ===================== SUMMARY TABLE ===================== -->
+<div class="phase-bar">
+  <div class="phase-num">SUMMARY</div>
+  <div class="phase-text">
+    <h2>📋 Quick Reference — Everything at a Glance</h2>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><div class="step-num">20</div><h3>Your URLs after deployment</h3></div>
+  <div class="url-box">
+    <div class="url-label">Backend (Spring Boot on Railway)</div>
+    <div class="url-val">https://water-tank-xxxx.up.railway.app</div>
+  </div>
+  <div class="url-box">
+    <div class="url-label">User Frontend (Netlify)</div>
+    <div class="url-val">https://amazing-water-tank.netlify.app</div>
+  </div>
+  <div class="url-box">
+    <div class="url-label">Admin Dashboard (Netlify)</div>
+    <div class="url-val">https://tank-admin-panel.netlify.app</div>
+  </div>
+  <div class="url-box">
+    <div class="url-label">Database (PostgreSQL on Railway — auto-connected)</div>
+    <div class="url-val">Managed by Railway automatically — you never touch it</div>
+  </div>
+
+  <table style="margin-top:16px;">
+    <tr><th>Feature</th><th>Before Deploy</th><th>After Deploy</th></tr>
+    <tr><td>Database</td><td class="y">H2 on laptop</td><td class="g">PostgreSQL on Railway ☁️</td></tr>
+    <tr><td>Access from phone</td><td class="r">❌ No</td><td class="g">✅ Yes, any device</td></tr>
+    <tr><td>IntelliJ required</td><td class="r">✅ Always</td><td class="g">❌ No</td></tr>
+    <tr><td>ESP32 WiFi required</td><td class="r">Same as laptop</td><td class="g">Any WiFi anywhere</td></tr>
+    <tr><td>QR scanner on phone</td><td class="y">⚠️ Inconsistent</td><td class="g">✅ Works (HTTPS)</td></tr>
+    <tr><td>Accounts saved forever</td><td class="r">❌ Lost on restart</td><td class="g">✅ Permanent</td></tr>
+    <tr><td>Cost</td><td class="g">Free</td><td class="g">Free</td></tr>
+  </table>
+</div>
+
+</div><!-- end page -->
+</body>
+</html>

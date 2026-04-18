@@ -1,0 +1,113 @@
+/* General Layout */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body, html { width: 100%; height: 100%; font-family: 'Inter', sans-serif; overflow: hidden; }
+
+.page-wrapper {
+    width: 100%; height: 100vh;
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('image/tank.jpg') center/cover no-repeat;
+    display: flex; justify-content: center; align-items: center;
+}
+
+.login-box { width: 100%; max-width: 450px; text-align: center; color: white; padding: 20px; }
+.main-logo { width: 100px; margin-bottom: 10px; }
+.main-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 25px; }
+
+/* Inayos na Vertical Inputs */
+.input-row { 
+    display: flex; 
+    flex-direction: column; /* Vertical alignment (Pababa) */
+    gap: 15px; 
+    margin-bottom: 15px; 
+}
+
+.input-group { 
+    position: relative; 
+    width: 100%; 
+    margin-bottom: 15px; 
+}
+
+.field-label { display: block; text-align: left; font-size: 12px; margin-bottom: 5px; opacity: 0.9; }
+
+.input-group input {
+    width: 100%; 
+    padding: 14px 45px 14px 15px; /* Padding sa kanan para sa eye/camera icon */
+    border-radius: 10px; 
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255, 255, 255, 0.2); 
+    color: white; 
+    outline: none; 
+    backdrop-filter: blur(10px);
+}
+.input-group input::placeholder { color: rgba(255,255,255,0.7); }
+
+/* Icons Inside Inputs */
+.toggle-eye {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%); /* Sentrong-sentro vertical */
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.7);
+    z-index: 10;
+    font-size: 1.1rem;
+}
+
+.scan-trigger-btn {
+    position: absolute;
+    right: 10px;
+    top: 32px; /* Dahil may label ang Hardware ID field */
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 35px;
+    cursor: pointer;
+}
+
+.login-btn {
+    width: 100%; padding: 16px; background: white; color: black; border: none; 
+    border-radius: 10px; font-weight: 800; margin-top: 15px; text-transform: uppercase;
+    cursor: pointer;
+}
+
+/* ==========================================================
+   MODAL SCANNER STYLING
+   ========================================================== */
+.scanner-modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7); z-index: 9999;
+    display: flex; justify-content: center; align-items: center;
+}
+
+.scanner-modal-content {
+    background: white; width: 90%; max-width: 450px; border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); overflow: hidden; animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+.modal-header-custom {
+    padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid #eee;
+}
+.modal-title { color: #333; font-weight: 700; font-size: 1.1rem; margin: 0; }
+.btn-close-custom { background: none; border: none; font-size: 24px; color: #999; cursor: pointer; }
+
+.modal-body-custom { padding: 25px; text-align: center; }
+
+.step-indicator { color: #007bff; font-weight: 700; font-size: 1rem; margin-bottom: 10px; }
+.instruction-text { color: #555; font-size: 13px; margin-bottom: 20px; line-height: 1.5; }
+
+/* Camera Container */
+#qr-reader-container {
+    width: 100%; border-radius: 12px;
+    overflow: hidden; background: #000; border: 1px solid #ddd;
+}
+
+#qr-reader video { width: 100% !important; object-fit: cover; }
+
+.status-waiting { margin-top: 15px; color: #dc3545; font-weight: 600; font-size: 13px; }
+
+/* Remove default html5-qrcode UI elements */
+#qr-reader__dashboard, #qr-reader__status_span { display: none !important; }

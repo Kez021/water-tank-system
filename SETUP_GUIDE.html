@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Complete Setup Guide — Water Tank System</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Segoe UI',sans-serif; background:#0d1117; color:#e6edf3; line-height:1.6; }
+  .page { max-width:900px; margin:0 auto; padding:40px 24px; }
+  h1 { font-size:2rem; color:#4a9eff; margin-bottom:6px; }
+  .subtitle { color:#8b949e; margin-bottom:40px; font-size:1rem; }
+  
+  /* CONFUSION BOX */
+  .confusion-box { background:#1a2035; border:2px solid #4a9eff; border-radius:14px; padding:28px; margin-bottom:36px; }
+  .confusion-box h2 { color:#4a9eff; margin-bottom:16px; font-size:1.2rem; }
+  .qa { margin-bottom:18px; }
+  .q { color:#f78166; font-weight:700; margin-bottom:6px; font-size:1rem; }
+  .a { color:#e6edf3; padding-left:16px; border-left:3px solid #4a9eff; }
+  .a code { background:#2d333b; padding:2px 6px; border-radius:4px; color:#79c0ff; font-size:.9rem; }
+
+  /* PHASE HEADER */
+  .phase { background:linear-gradient(135deg,#1a2540,#0f1318); border:1px solid #30363d; border-radius:14px; padding:24px 28px; margin-bottom:12px; margin-top:36px; }
+  .phase-label { font-size:.78rem; font-weight:700; letter-spacing:2px; color:#8b949e; text-transform:uppercase; margin-bottom:6px; }
+  .phase h2 { font-size:1.4rem; color:#fff; }
+  .phase p { color:#8b949e; margin-top:6px; font-size:.9rem; }
+
+  /* STEP */
+  .step { background:#161b22; border:1px solid #30363d; border-radius:12px; padding:24px; margin-bottom:14px; }
+  .step-num { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; background:#4a9eff; border-radius:50%; color:#fff; font-weight:800; font-size:.9rem; margin-bottom:12px; }
+  .step h3 { font-size:1rem; color:#fff; margin-bottom:10px; }
+  .step p, .step li { color:#c9d1d9; font-size:.92rem; margin-bottom:6px; }
+  .step ul { padding-left:20px; }
+  .step ol { padding-left:20px; }
+  .step ol li, .step ul li { margin-bottom:8px; }
+
+  /* CODE BLOCK */
+  .code-block { background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:16px; margin:12px 0; font-family:'Courier New',monospace; font-size:.85rem; overflow-x:auto; }
+  .code-block .comment { color:#8b949e; }
+  .code-block .key { color:#79c0ff; }
+  .code-block .val { color:#a5d6ff; }
+  .code-block .string { color:#a8ff78; }
+  .code-block .highlight { background:#2d3748; border-left:3px solid #f78166; padding-left:8px; margin:-2px -16px; padding-right:16px; display:block; }
+
+  /* WARNING / TIP / SUCCESS BOX */
+  .warn { background:#2d1b1b; border:1px solid #f78166; border-radius:10px; padding:16px; margin:12px 0; }
+  .warn-title { color:#f78166; font-weight:700; margin-bottom:6px; }
+  .tip { background:#1b2d1b; border:1px solid #3fb950; border-radius:10px; padding:16px; margin:12px 0; }
+  .tip-title { color:#3fb950; font-weight:700; margin-bottom:6px; }
+  .info { background:#1b2540; border:1px solid #4a9eff; border-radius:10px; padding:16px; margin:12px 0; }
+  .info-title { color:#4a9eff; font-weight:700; margin-bottom:6px; }
+
+  /* TABLE */
+  table { width:100%; border-collapse:collapse; margin:12px 0; font-size:.88rem; }
+  th { background:#21262d; color:#8b949e; padding:10px 14px; text-align:left; border:1px solid #30363d; font-size:.78rem; text-transform:uppercase; letter-spacing:.5px; }
+  td { padding:10px 14px; border:1px solid #30363d; color:#c9d1d9; vertical-align:top; }
+  tr:nth-child(even) td { background:#161b22; }
+  .green { color:#3fb950; font-weight:700; }
+  .red { color:#f78166; }
+  .blue { color:#4a9eff; }
+
+  /* FILE PILL */
+  .file { display:inline-block; background:#21262d; border:1px solid #30363d; border-radius:6px; padding:3px 10px; font-family:monospace; font-size:.82rem; color:#79c0ff; margin:2px; }
+
+  /* ARROW */
+  .arrow { color:#4a9eff; font-weight:700; margin:0 6px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>🚰 Complete Setup Guide</h1>
+<p class="subtitle">Automated Overhead Tank System — IntelliJ + VS Code + Railway + Netlify</p>
+
+<!-- ======================================================
+     ANSWER YOUR CONFUSION FIRST
+     ====================================================== -->
+<div class="confusion-box">
+  <h2>❓ Your Questions Answered First — Read This!</h2>
+
+  <div class="qa">
+    <div class="q">Q: Can I use BOTH H2 (local) and PostgreSQL (online) at the same time?</div>
+    <div class="a">
+      <strong>YES — and your new code already does this automatically.</strong><br>
+      The <code>application.properties</code> is now smart:<br>
+      • <strong>On your laptop</strong> → uses H2 file database automatically (no setup needed)<br>
+      • <strong>On Railway (deployed)</strong> → uses PostgreSQL automatically (Railway sets this up)<br>
+      You never touch this file again. It detects which one to use by itself.
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q: Will I lose my H2 data when I deploy online?</div>
+    <div class="a">
+      The H2 database only lives on your laptop. When you deploy to Railway, you get a <strong>brand new clean PostgreSQL database</strong> online. Users who register online are saved there permanently — they can log in from any device, any WiFi, anytime. Your local H2 is just for testing on your laptop.
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q: Do I still need IntelliJ open after deployment?</div>
+    <div class="a">
+      <strong>NO.</strong> After Railway deployment, the Spring Boot server runs 24/7 in the cloud. You only need IntelliJ for local testing on your laptop. The ESP32 will connect to Railway's URL instead of your laptop IP.
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q: What is the difference between the two databases?</div>
+    <div class="a">
+      <table>
+        <tr><th>Feature</th><th>H2 (Local)</th><th>PostgreSQL (Railway)</th></tr>
+        <tr><td>Where it lives</td><td>Your laptop only</td><td>Online server 24/7</td></tr>
+        <tr><td>Data lost when?</td><td>Never (file saved)</td><td>Never (permanent)</td></tr>
+        <tr><td>Access from phone?</td><td class="red">❌ No</td><td class="green">✅ Yes</td></tr>
+        <tr><td>Needs IntelliJ?</td><td class="red">✅ Yes</td><td class="green">❌ No</td></tr>
+        <tr><td>Used when?</td><td>Testing locally</td><td>After deploying</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================
+     PHASE 0 — EXTRACT & UNDERSTAND
+     ====================================================== -->
+<div class="phase">
+  <div class="phase-label">Before You Start</div>
+  <h2>📦 Extract & Understand Your Project</h2>
+  <p>Download the ZIP and understand the folder structure</p>
+</div>
+
+<div class="step">
+  <div class="step-num">0</div>
+  <h3>Extract the ZIP and know your folders</h3>
+  <p>Download <strong>water-tank-COMPLETE.zip</strong> → Right-click → Extract All → put it on your Desktop</p>
+  <div class="code-block">
+final-project/
+├── <span class="key">Backend_Java_Spring/</span>     ← Open THIS in IntelliJ
+│   └── system/system/
+│       ├── pom.xml                  ← Maven config (dependencies)
+│       └── src/main/
+│           ├── java/com/tank/system/
+│           │   ├── config/          ← SecurityConfig.java
+│           │   ├── controller/      ← All API endpoints (7 files)
+│           │   ├── model/           ← Database tables (5 files)
+│           │   ├── repository/      ← Database queries (5 files)
+│           │   └── service/         ← Email + SMS service
+│           └── resources/
+│               ├── application.properties  ← Database config
+│               └── static/          ← Built-in frontend (backup)
+│
+├── <span class="key">Frontend_Standalone/</span>     ← Open THIS in VS Code
+│   ├── login.html
+│   ├── register.html
+│   ├── dashboard.html               ← Has Safety Tips + Need Help (NEW)
+│   ├── dashboard.js                 ← Has RAILWAY_URL config at top
+│   └── app.js                       ← Has RAILWAY_URL config at top
+│
+├── <span class="key">Admin_Dashboard/</span>         ← Also open in VS Code
+│   ├── admin.html
+│   ├── admin.css
+│   └── admin.js                     ← Has RAILWAY_URL config at top
+│
+├── <span class="key">main.cpp</span>                 ← ESP32 code (open in VS Code PlatformIO)
+└── platformio.ini
+  </div>
+</div>
+
+<!-- ======================================================
+     PHASE 1 — INTELLIJ SETUP
+     ====================================================== -->
+<div class="phase">
+  <div class="phase-label">Phase 1 — IntelliJ IDEA</div>
+  <h2>☕ Set Up Spring Boot Backend</h2>
+  <p>This runs your API server at localhost:8080</p>
+</div>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <h3>Open the project in IntelliJ</h3>
+  <ol>
+    <li>Open <strong>IntelliJ IDEA</strong></li>
+    <li>Click <strong>"Open"</strong> on the welcome screen (NOT "New Project")</li>
+    <li>Navigate to: <code>final-project → Backend_Java_Spring → system → system</code></li>
+    <li>You must see <strong>pom.xml</strong> inside this folder — that's the right folder</li>
+    <li>Click <strong>OK / Select Folder</strong></li>
+    <li>IntelliJ asks <em>"Trust this project?"</em> → Click <strong>Trust Project</strong></li>
+  </ol>
+  <div class="tip">
+    <div class="tip-title">✅ How to know you opened the right folder</div>
+    In the left panel (Project tree), you should see: <code>src</code> folder, <code>pom.xml</code>, <code>mvnw</code> all at the same level. If you only see another folder inside, you went one level too shallow.
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">2</div>
+  <h3>Set Java 21 SDK</h3>
+  <ol>
+    <li>Go to <strong>File → Project Structure</strong> (shortcut: <code>Ctrl+Alt+Shift+S</code>)</li>
+    <li>Click <strong>Project</strong> on the left side</li>
+    <li>Look at <strong>SDK</strong> dropdown — if it's empty or wrong version:</li>
+    <li>Click the dropdown → <strong>Download JDK</strong></li>
+    <li>Select version <strong>21</strong>, vendor: <strong>Eclipse Temurin</strong> (or any)</li>
+    <li>Click <strong>Download</strong> → wait → click <strong>Apply → OK</strong></li>
+  </ol>
+</div>
+
+<div class="step">
+  <div class="step-num">3</div>
+  <h3>Load Maven (pom.xml) — downloads all dependencies</h3>
+  <p>IntelliJ may show a notification at the top or bottom. Look for any of these:</p>
+  <ul>
+    <li>"Maven build script found" → click the blue link</li>
+    <li>A floating popup → click <strong>"Load Maven Project"</strong></li>
+  </ul>
+  <p><strong>If no popup appears:</strong></p>
+  <ol>
+    <li>Right-click on <code>pom.xml</code> in the left panel</li>
+    <li>Click <strong>Maven → Reload Project</strong></li>
+  </ol>
+  <div class="info">
+    <div class="info-title">📦 What pom.xml does — explained simply</div>
+    pom.xml is like a shopping list for your project. It tells Maven (a download manager) which libraries to download. The first time it runs, it downloads everything from the internet (takes 2–5 minutes). After that it's cached locally and runs instantly.
+    <br><br>
+    <strong>Your pom.xml includes:</strong><br>
+    • <code>spring-boot-starter-web</code> → makes it a web API server<br>
+    • <code>spring-boot-starter-data-jpa</code> → connects to database<br>
+    • <code>spring-boot-starter-security</code> → BCrypt login protection<br>
+    • <code>spring-boot-starter-mail</code> → Gmail SMTP for OTP/alerts<br>
+    • <code>h2</code> → local database (for your laptop)<br>
+    • <code>postgresql</code> → online database (for Railway deployment)<br>
+    • <code>lombok</code> → removes boilerplate (@Getter, @Setter)<br>
+    • <code>twilio</code> → SMS alerts
+  </div>
+  <div class="warn">
+    <div class="warn-title">⚠️ If you see red errors after loading Maven</div>
+    This means dependencies didn't download. Fix: Go to <strong>File → Settings → Build, Execution → Maven</strong> → make sure "Always update snapshots" is checked. Then right-click pom.xml → Maven → Reload Project again. Make sure you have internet!
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">4</div>
+  <h3>Enable annotation processing (for Lombok)</h3>
+  <ol>
+    <li>Go to <strong>File → Settings</strong> (shortcut: <code>Ctrl+Alt+S</code>)</li>
+    <li>Search for <strong>"annotation"</strong> in the search bar</li>
+    <li>Click <strong>Build, Execution → Compiler → Annotation Processors</strong></li>
+    <li>Check ✅ <strong>"Enable annotation processing"</strong></li>
+    <li>Click <strong>Apply → OK</strong></li>
+  </ol>
+  <div class="warn">
+    <div class="warn-title">⚠️ Why this matters</div>
+    Lombok uses annotation processing to generate @Getter, @Setter, @NoArgsConstructor etc. at compile time. Without this checked, IntelliJ shows red errors on all your model files even though the code is correct.
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">5</div>
+  <h3>Run the Spring Boot application</h3>
+  <ol>
+    <li>In the left panel, find: <code>src/main/java/com/tank/system/TankSystemApplication.java</code></li>
+    <li>Double-click to open it</li>
+    <li>Click the <strong>green ▶ play button</strong> on the left margin next to <code>public static void main</code></li>
+    <li>OR click the green ▶ button at the very top toolbar of IntelliJ</li>
+    <li>Wait 20–40 seconds for it to start</li>
+  </ol>
+  <p><strong>✅ Success — you will see this in the Console panel at the bottom:</strong></p>
+  <div class="code-block">
+<span class="string">Started TankSystemApplication in 4.3 seconds (JVM running for 5.1)</span>
+<span class="string">Tomcat started on port(s): 8080</span>
+<span class="string">Regine Bagares</span>
+<span class="string">tabang Lord</span>
+<span class="string">sakit sa ulo</span>
+  </div>
+  <p><strong>Test it works:</strong> Open Chrome → go to <code>http://localhost:8080/h2-console</code></p>
+  <ul>
+    <li>JDBC URL: <code>jdbc:h2:file:./data/tank_db</code></li>
+    <li>Username: <code>sa</code> &nbsp; Password: (leave empty)</li>
+    <li>Click Connect → you see your database tables ✅</li>
+  </ul>
+</div>
+
+<!-- ======================================================
+     PHASE 2 — VS CODE FRONTEND
+     ====================================================== -->
+<div class="phase">
+  <div class="phase-label">Phase 2 — VS Code</div>
+  <h2>🌐 Set Up Frontend + ESP32</h2>
+  <p>This runs your website and flashes the ESP32</p>
+</div>
+
+<div class="step">
+  <div class="step-num">6</div>
+  <h3>Install VS Code extensions (do this once)</h3>
+  <p>Click the Extensions icon (4 squares) on the left sidebar and install these:</p>
+  <table>
+    <tr><th>Extension Name</th><th>Publisher</th><th>Why you need it</th></tr>
+    <tr><td><strong>Live Server</strong></td><td>Ritwick Dey</td><td>Opens your HTML files in the browser with auto-refresh</td></tr>
+    <tr><td><strong>PlatformIO IDE</strong></td><td>PlatformIO</td><td>Compiles and uploads your ESP32 code</td></tr>
+  </table>
+  <div class="warn">
+    <div class="warn-title">⚠️ After installing PlatformIO</div>
+    VS Code will ask you to restart. Click Restart. PlatformIO also takes 3–5 minutes to install its tools the first time.
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">7</div>
+  <h3>Open the Frontend in VS Code</h3>
+  <ol>
+    <li>Open VS Code</li>
+    <li>Click <strong>File → Open Folder</strong></li>
+    <li>Select: <code>final-project/Frontend_Standalone</code></li>
+    <li>In the file list on the left, click <code>login.html</code></li>
+    <li>Click <strong>"Go Live"</strong> at the very bottom right corner of VS Code</li>
+    <li>Browser opens at: <code>http://127.0.0.1:5500/login.html</code></li>
+  </ol>
+  <div class="tip">
+    <div class="tip-title">✅ This is your app — use it now!</div>
+    Make sure IntelliJ is running first (Step 5). Then you can register, log in, scan QR, see dashboard, Safety Tips, Need Help — everything works.
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">8</div>
+  <h3>Open Admin Dashboard in VS Code</h3>
+  <ol>
+    <li>In VS Code: <strong>File → Open Folder</strong></li>
+    <li>Select: <code>final-project/Admin_Dashboard</code></li>
+    <li>Click <code>admin.html</code> → click <strong>"Go Live"</strong></li>
+    <li>Browser opens the Admin login page</li>
+  </ol>
+  <p>Default admin login:</p>
+  <div class="code-block">
+Username: <span class="string">admin</span>
+Password: <span class="string">tank@admin2024</span>
+  </div>
+  <div class="info">
+    <div class="info-title">💡 To change the admin password</div>
+    Open <code>Admin_Dashboard/admin.js</code> line 3 → change <code>const ADMIN_PASSWORD = "tank@admin2024"</code> to your own password.
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">9</div>
+  <h3>Set up ESP32 in VS Code (PlatformIO)</h3>
+  <ol>
+    <li>In VS Code: <strong>File → Open Folder</strong></li>
+    <li>Select the <strong>root</strong> <code>final-project</code> folder (the one with main.cpp + platformio.ini)</li>
+    <li>Open <code>main.cpp</code></li>
+    <li>Find and fill in these 3 lines:</li>
+  </ol>
+  <div class="code-block">
+<span class="comment">// LINE 5 — your WiFi name:</span>
+const char* ssid = <span class="highlight"><span class="string">"YOUR_WIFI_NAME_HERE"</span></span>;
+
+<span class="comment">// LINE 6 — your WiFi password:</span>
+const char* password = <span class="highlight"><span class="string">"YOUR_WIFI_PASSWORD_HERE"</span></span>;
+
+<span class="comment">// LINE 17 — your laptop's IP address on the WiFi:</span>
+const char* serverUrl = <span class="highlight"><span class="string">"http://192.168.1.5:8080/api/tank/sync"</span></span>;
+  </div>
+  <div class="info">
+    <div class="info-title">📡 How to find your laptop IP address</div>
+    1. Press <strong>Windows + R</strong> → type <code>cmd</code> → press Enter<br>
+    2. Type <code>ipconfig</code> → press Enter<br>
+    3. Look for <strong>Wireless LAN adapter WiFi → IPv4 Address</strong><br>
+    4. It looks like <code>192.168.1.5</code> or <code>192.168.100.xx</code><br>
+    5. Use that in the serverUrl above<br><br>
+    ⚠️ Your ESP32 and laptop MUST be on the same WiFi network!
+  </div>
+  <p><strong>Upload to ESP32:</strong></p>
+  <ol>
+    <li>Connect ESP32 to laptop via USB cable</li>
+    <li>At the bottom of VS Code, click the <strong>→ Upload</strong> arrow button</li>
+    <li>Wait for compilation and upload (about 30–60 seconds)</li>
+    <li>Click the plug icon (Serial Monitor) → set baud to <code>115200</code></li>
+    <li>You should see: <code>Sync OK | Dist: 24.5cm | Level: 67.2% | Cmd: AUTO_OFF</code></li>
+  </ol>
+</div>
+
+<!-- ======================================================
+     PHASE 3 — DAILY USE
+     ====================================================== -->
+<div class="phase">
+  <div class="phase-label">Phase 3 — Daily Use</div>
+  <h2>▶️ How to Start Everything Every Day</h2>
+</div>
+
+<div class="step">
+  <div class="step-num">10</div>
+  <h3>Every time you want to test — do this in ORDER</h3>
+  <table>
+    <tr><th>Order</th><th>What</th><th>How</th><th>Wait for</th></tr>
+    <tr><td><strong>1st</strong></td><td>Start IntelliJ backend</td><td>Click ▶ on TankSystemApplication.java</td><td>"Tomcat started on port 8080"</td></tr>
+    <tr><td><strong>2nd</strong></td><td>Start frontend</td><td>VS Code → login.html → Go Live</td><td>Browser opens</td></tr>
+    <tr><td><strong>3rd</strong></td><td>Open in browser</td><td>http://127.0.0.1:5500/login.html</td><td>Login page shows</td></tr>
+    <tr><td><strong>4th</strong></td><td>ESP32 syncs</td><td>Plugged in + on same WiFi</td><td>Serial Monitor shows "Sync OK"</td></tr>
+    <tr><td>Optional</td><td>Admin dashboard</td><td>admin.html → Go Live</td><td>Admin login page</td></tr>
+  </table>
+</div>
+
+<!-- ======================================================
+     PHASE 4 — DEPLOY ONLINE
+     ====================================================== -->
+<div class="phase">
+  <div class="phase-label">Phase 4 — Online Deployment</div>
+  <h2>🚀 Deploy to Railway + Netlify (Free)</h2>
+  <p>Do this when you want accounts to be saved permanently online and accessible from any device</p>
+</div>
+
+<div class="step">
+  <div class="step-num">11</div>
+  <h3>Push your code to GitHub</h3>
+  <ol>
+    <li>Go to <strong>github.com</strong> → Sign up for a free account (or log in)</li>
+    <li>Click the <strong>+</strong> icon → <strong>New Repository</strong></li>
+    <li>Name it: <code>water-tank-system</code> → set to Public → click Create</li>
+    <li>Open <strong>Command Prompt</strong> on your laptop</li>
+    <li>Navigate to your project folder:</li>
+  </ol>
+  <div class="code-block">
+cd Desktop\final-project\Backend_Java_Spring\system\system
+  </div>
+  <p>Then run these commands one by one:</p>
+  <div class="code-block">
+git init
+git add .
+git commit -m "Initial commit - Water Tank System"
+git branch -M main
+git remote add origin https://github.com/YOUR_USERNAME/water-tank-system.git
+git push -u origin main
+  </div>
+  <div class="warn">
+    <div class="warn-title">⚠️ Replace YOUR_USERNAME</div>
+    Change YOUR_USERNAME to your actual GitHub username. It will ask for your GitHub email and a token (not your password — GitHub no longer accepts passwords in terminal). To get a token: GitHub → Settings → Developer Settings → Personal Access Tokens → Generate new token → select "repo" → copy the token and use it as the password.
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">12</div>
+  <h3>Deploy Backend on Railway (free PostgreSQL database online)</h3>
+  <ol>
+    <li>Go to <strong>railway.app</strong> → Sign up free with GitHub</li>
+    <li>Click <strong>New Project</strong> → <strong>Deploy from GitHub Repo</strong> → select <code>water-tank-system</code></li>
+    <li>Railway detects Spring Boot → starts building automatically</li>
+    <li>Click <strong>+ New</strong> → <strong>Database</strong> → <strong>Add PostgreSQL</strong></li>
+    <li>Railway automatically creates the database and sets <code>DATABASE_URL</code> for you</li>
+    <li>Wait 3–5 minutes → you get a URL like: <code>https://water-tank-xxxx.up.railway.app</code></li>
+  </ol>
+  <div class="tip">
+    <div class="tip-title">✅ Test your backend is live</div>
+    Open browser → go to: <code>https://your-railway-url.up.railway.app/api/admin/stats</code><br>
+    If you see JSON data → your backend is live and database is connected! 🎉
+  </div>
+  <div class="info">
+    <div class="info-title">💡 How the database switch works automatically</div>
+    Your <code>application.properties</code> has this line:<br>
+    <code>spring.datasource.url=${DATABASE_URL:jdbc:h2:file:./data/tank_db}</code><br><br>
+    This means:<br>
+    • If <code>DATABASE_URL</code> environment variable exists → use it (Railway sets this) → PostgreSQL<br>
+    • If it doesn't exist (your laptop) → use H2 file<br><br>
+    <strong>You never change application.properties. It just works.</strong>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">13</div>
+  <h3>Deploy Frontend on Netlify (free website hosting)</h3>
+  <ol>
+    <li>Go to <strong>netlify.com</strong> → Sign up free (use GitHub login)</li>
+    <li>On the dashboard: drag and drop your <strong>Frontend_Standalone</strong> folder onto the page</li>
+    <li>Done! You get a URL like: <code>https://water-tank-system.netlify.app</code></li>
+    <li>Do the same for Admin Dashboard: drag and drop the <strong>Admin_Dashboard</strong> folder → get another URL</li>
+  </ol>
+</div>
+
+<div class="step">
+  <div class="step-num">14</div>
+  <h3>Update the Railway URL — only 1 line in each file</h3>
+  <p>Now that you have your Railway URL, update it in <strong>3 files</strong>:</p>
+
+  <p><strong>File 1: Frontend_Standalone/dashboard.js (line 6)</strong></p>
+  <div class="code-block">
+<span class="comment">// Change this:</span>
+const RAILWAY_URL = <span class="string">"http://localhost:8080"</span>;
+
+<span class="comment">// To this (your actual Railway URL):</span>
+const RAILWAY_URL = <span class="string">"https://water-tank-xxxx.up.railway.app"</span>;
+  </div>
+
+  <p><strong>File 2: Frontend_Standalone/app.js (line 8)</strong></p>
+  <div class="code-block">
+const RAILWAY_URL = <span class="string">"https://water-tank-xxxx.up.railway.app"</span>;
+  </div>
+
+  <p><strong>File 3: Admin_Dashboard/admin.js (line 3)</strong></p>
+  <div class="code-block">
+const RAILWAY_URL = <span class="string">"https://water-tank-xxxx.up.railway.app"</span>;
+  </div>
+
+  <p>After changing, redeploy to Netlify by dragging the folder again.</p>
+</div>
+
+<div class="step">
+  <div class="step-num">15</div>
+  <h3>Update ESP32 to use Railway URL</h3>
+  <p>Open <code>main.cpp</code> → change line 17:</p>
+  <div class="code-block">
+<span class="comment">// Change this:</span>
+const char* serverUrl = <span class="string">"http://192.168.1.5:8080/api/tank/sync"</span>;
+
+<span class="comment">// To this (your Railway URL):</span>
+const char* serverUrl = <span class="string">"https://water-tank-xxxx.up.railway.app/api/tank/sync"</span>;
+  </div>
+  <p>Then re-upload to ESP32 via PlatformIO → Upload button.</p>
+  <div class="tip">
+    <div class="tip-title">✅ After this, your prototype works on ANY WiFi anywhere</div>
+    The ESP32 no longer needs to be on the same WiFi as your laptop. It just needs any internet connection and it syncs directly to Railway 24/7.
+  </div>
+</div>
+
+<!-- ======================================================
+     COMMON ERRORS
+     ====================================================== -->
+<div class="phase">
+  <div class="phase-label">Troubleshooting</div>
+  <h2>🔧 Common Errors and How to Fix Them</h2>
+</div>
+
+<div class="step">
+  <div class="step-num">!</div>
+  <h3>Error fixes</h3>
+  <table>
+    <tr><th>Error</th><th>Fix</th></tr>
+    <tr><td><code>Port 8080 already in use</code></td><td>IntelliJ is already running. Click the red ■ Stop button in the Run panel at the bottom, then run again.</td></tr>
+    <tr><td>Red errors on model files in IntelliJ</td><td>File → Settings → Compiler → Annotation Processors → check "Enable annotation processing" → Apply.</td></tr>
+    <tr><td>CORS error in browser console</td><td>Your VS Code live server port changed. Open SecurityConfig.java → add your current port (5500 or 5501) to allowedOrigins. Both are already there in your new code.</td></tr>
+    <tr><td>QR scanner not working</td><td>Allow camera in browser: Chrome → Settings → Privacy → Site Settings → Camera → Allow for 127.0.0.1. After deployment on HTTPS it works on all phones.</td></tr>
+    <tr><td>ESP32 shows "HTTP Sync Failed -1"</td><td>Your laptop IP changed. Run ipconfig again, get new IP, update main.cpp line 17, re-upload to ESP32.</td></tr>
+    <tr><td>Maven not downloading (red pom.xml)</td><td>Check internet. Then: right-click pom.xml → Maven → Reload Project.</td></tr>
+    <tr><td>Railway build fails</td><td>Make sure you pushed the folder that contains pom.xml (not a parent folder). Check Railway logs for the specific error.</td></tr>
+    <tr><td>Netlify site shows blank page</td><td>Make sure RAILWAY_URL in dashboard.js and app.js is set to your Railway URL, not localhost.</td></tr>
+  </table>
+</div>
+
+</div><!-- end .page -->
+</body>
+</html>

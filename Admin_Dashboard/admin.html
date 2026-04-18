@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — Automated Tank System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="login-screen" class="login-screen">
+    <div class="login-box">
+
+        <!-- Logo -->
+        <img src="image/tanklogo.png" alt="Tank System Logo" class="login-logo-img">
+
+        <h1>Admin Portal</h1>
+        <p class="login-sub">Automated Overhead Tank System</p>
+
+        <div class="login-form">
+            <div class="field-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="admin-username" placeholder="Admin Username" autocomplete="off">
+            </div>
+            <div class="field-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="admin-password" placeholder="Password">
+            </div>
+            <div id="login-error" class="login-error" style="display:none;">
+                ❌ Invalid credentials. Please try again.
+            </div>
+            <button onclick="adminLogin()" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MAIN ADMIN DASHBOARD ===== -->
+<div id="admin-dashboard" class="admin-wrapper" style="display:none;">
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-brand">
+            <!-- Logo in sidebar -->
+            <img src="image/tanklogo.png" alt="Logo" class="sidebar-logo-img">
+            <div>
+                <div class="brand-title">Admin Panel</div>
+                <div class="brand-sub">Tank System</div>
+            </div>
+        </div>
+
+        <div class="admin-profile">
+            <div class="profile-avatar"><i class="fas fa-user-shield"></i></div>
+            <div class="profile-info">
+                <span class="profile-name">Administrator</span>
+                <span class="profile-role">System Admin</span>
+            </div>
+        </div>
+
+        <nav class="admin-nav">
+            <a href="#" class="admin-nav-item active" onclick="showSection('overview')">
+                <i class="fas fa-tachometer-alt"></i> Overview
+            </a>
+            <a href="#" class="admin-nav-item" onclick="showSection('users')">
+                <i class="fas fa-users"></i> All Users
+            </a>
+            <a href="#" class="admin-nav-item" onclick="showSection('tanks')">
+                <i class="fas fa-water"></i> All Tanks
+            </a>
+            <a href="#" class="admin-nav-item" onclick="showSection('logs')">
+                <i class="fas fa-list-alt"></i> Activity Logs
+            </a>
+            <a href="#" class="admin-nav-item" onclick="showSection('tickets')">
+                <i class="fas fa-headset"></i> Support Tickets
+                <span id="ticket-badge" class="badge" style="display:none;">0</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer-actions">
+            <button onclick="refreshAll()" class="refresh-btn">
+                <i class="fas fa-sync-alt"></i> Refresh Data
+            </button>
+            <button onclick="adminLogout()" class="logout-btn-admin">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="admin-main">
+
+        <!-- TOP BAR -->
+        <header class="admin-topbar">
+            <div class="topbar-title" id="section-title">Overview</div>
+            <div class="topbar-right">
+                <span class="live-indicator"><span class="pulse-dot"></span> Live</span>
+                <span id="last-refresh-time" class="refresh-time">Loading...</span>
+                <!-- Dark mode toggle in topbar -->
+                <div class="dark-toggle" onclick="toggleDarkMode()" title="Toggle dark/light mode">
+                    <i class="fas fa-moon toggle-icon" id="toggle-icon-topbar"></i>
+                    <div class="toggle-track">
+                        <div class="toggle-thumb"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- LOADING SPINNER -->
+        <div id="loading-overlay" class="loading-overlay">
+            <div class="spinner"><i class="fas fa-spinner fa-spin"></i></div>
+            <p>Loading data...</p>
+        </div>
+
+        <!-- ===== OVERVIEW SECTION ===== -->
+        <section id="section-overview" class="admin-section">
+            <div class="stats-grid">
+                <div class="stat-card blue">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="stat-users">--</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-icon"><i class="fas fa-water"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="stat-tanks">--</div>
+                        <div class="stat-label">Total Tanks</div>
+                    </div>
+                </div>
+                <div class="stat-card teal">
+                    <div class="stat-icon"><i class="fas fa-wifi"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="stat-online">--</div>
+                        <div class="stat-label">Online Now</div>
+                    </div>
+                </div>
+                <div class="stat-card orange">
+                    <div class="stat-icon"><i class="fas fa-headset"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="stat-tickets">--</div>
+                        <div class="stat-label">Open Tickets</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-water"></i> Tank Status Overview</h3>
+                </div>
+                <div class="table-wrap">
+                    <table class="admin-table" id="overview-tanks-table">
+                        <thead>
+                            <tr>
+                                <th>Tank ID</th>
+                                <th>Tank Name</th>
+                                <th>Owner</th>
+                                <th>Water Level</th>
+                                <th>Pump</th>
+                                <th>Status</th>
+                                <th>Last Sync</th>
+                            </tr>
+                        </thead>
+                        <tbody id="overview-tanks-body">
+                            <tr><td colspan="7" class="loading-text">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== USERS SECTION ===== -->
+        <section id="section-users" class="admin-section" style="display:none;">
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-users"></i> All Registered Users</h3>
+                    <input type="text" id="user-search" placeholder="Search by name or email..." class="search-input" oninput="filterUsers()">
+                </div>
+                <div class="table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Tanks</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <tr><td colspan="6" class="loading-text">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="user-detail-modal" class="modal-overlay" style="display:none;">
+                <div class="modal-box">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-user"></i> User Details</h3>
+                        <button onclick="closeModal('user-detail-modal')" class="modal-close">×</button>
+                    </div>
+                    <div id="user-detail-content" class="modal-body"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== TANKS SECTION ===== -->
+        <section id="section-tanks" class="admin-section" style="display:none;">
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-water"></i> All Tanks</h3>
+                    <input type="text" id="tank-search" placeholder="Search by tank ID or owner..." class="search-input" oninput="filterTanks()">
+                </div>
+                <div class="table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Tank ID</th>
+                                <th>Name</th>
+                                <th>Owner</th>
+                                <th>Level</th>
+                                <th>Capacity</th>
+                                <th>Mode</th>
+                                <th>Pump</th>
+                                <th>Status</th>
+                                <th>Last Sync</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tanks-table-body">
+                            <tr><td colspan="9" class="loading-text">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== ACTIVITY LOGS SECTION ===== -->
+        <section id="section-logs" class="admin-section" style="display:none;">
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-list-alt"></i> All Activity Logs</h3>
+                    <input type="text" id="log-search" placeholder="Search logs..." class="search-input" oninput="filterLogs()">
+                </div>
+                <div class="table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Tank ID</th>
+                                <th>Action</th>
+                                <th>Status</th>
+                                <th>Details</th>
+                                <th>Amount (L)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-table-body">
+                            <tr><td colspan="6" class="loading-text">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SUPPORT TICKETS SECTION ===== -->
+        <section id="section-tickets" class="admin-section" style="display:none;">
+            <div class="ticket-filter-bar">
+                <button class="filter-btn active" onclick="filterTickets('all', this)">All</button>
+                <button class="filter-btn" onclick="filterTickets('Open', this)">Open</button>
+                <button class="filter-btn" onclick="filterTickets('In Progress', this)">In Progress</button>
+                <button class="filter-btn" onclick="filterTickets('Resolved', this)">Resolved</button>
+            </div>
+
+            <div id="tickets-container">
+                <div class="loading-text">Loading tickets...</div>
+            </div>
+
+            <div id="ticket-modal" class="modal-overlay" style="display:none;">
+                <div class="modal-box" style="max-width:600px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-ticket-alt"></i> Ticket Details</h3>
+                        <button onclick="closeModal('ticket-modal')" class="modal-close">×</button>
+                    </div>
+                    <div id="ticket-modal-content" class="modal-body"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>

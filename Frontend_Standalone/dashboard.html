@@ -1,0 +1,693 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Automated Tank System</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+    <aside class="sidebar">
+        <div class="brand-section">
+   
+
+    <div class="brand-horizontal-layout">
+        <img src="image/tanklogo.png" alt="Tank Logo" class="main-logo">
+        <div class="brand-text">
+            <h2>Automated</h2>
+            <h2>Overhead Tank</h2>
+        </div>
+    </div>
+</div>
+
+<div class="header-divider"></div>
+
+        <div class="profile-section">
+            <i class="fa-solid fa-user-shield admin-icon-blue"></i>
+            <div class="admin-info">
+                <span class="admin-label">System User</span>
+                <span class="admin-name">Administrator</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="javascript:void(0)" class="nav-item active" id="nav-dashboard" data-view="dashboard-view">
+                <i class="fa-solid fa-chart-line"></i> Dashboard
+            </a>
+            <a href="javascript:void(0)" class="nav-item" id="nav-analytics" data-view="analytics-view">
+                <i class="fa-solid fa-chart-pie"></i> Analytics
+            </a>
+            <a href="javascript:void(0)" class="nav-item" id="nav-activity" data-view="activity-log-view">
+                <i class="fa-solid fa-clock-rotate-left"></i> Activity Log
+            </a>
+            <a href="javascript:void(0)" class="nav-item" id="nav-tanks" data-view="tanks-view">
+                <i class="fa-solid fa-droplet"></i> Tank Management
+            </a>
+            <a href="javascript:void(0)" class="nav-item" data-view="settings-view">
+             <i class="fa-solid fa-gear"></i> Settings
+            </a>
+            <a href="javascript:void(0)" class="nav-item" data-view="safety-tips-view">
+                <i class="fa-solid fa-shield-heart"></i> Safety Tips
+            </a>
+            <a href="javascript:void(0)" class="nav-item" data-view="need-help-view">
+                <i class="fa-solid fa-circle-question"></i> Need Help?
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="login.html" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </a>
+        </div>
+    </aside>
+
+  <main class="main-content">
+    <section id="dashboard-view" class="content-section">
+        <header class="view-header">
+            <div class="header-titles">
+                <h1>Dashboard Overview</h1>
+                <p>Real-time monitoring for <span id="active-tank-id-label">--</span></p>
+            </div>
+
+            <div class="tank-select-container">
+    <label for="tank-switcher">Select Tank</label>
+    <select id="tank-switcher" class="tm-select-field">
+        </select>
+</div>
+        </header>
+
+        <div class="tank-cards-grid">
+            <div class="tank-card" id="main-tank-card">
+                <div class="status-indicator-top">
+                    <span id="card-dot" class="dot online"></span>
+                    <span id="card-status-text" class="status-text online-text">Online</span>
+                </div>
+                
+                <div class="card-content">
+                    <i class="fa-solid fa-droplet icon-blue"></i>
+                    <h3 class="tank-name" id="card-tank-name">Floor Tank</h3> 
+                    
+                    <div class="water-level-section">
+                        <label class="water-label">Water Level</label>
+                        <div class="progress-bar-container">
+                            <div id="card-progress-fill" class="progress-fill blue-fill" style="width: 0%;"></div>
+                        </div>
+                        <div class="stats-row">
+                            <span id="card-volume-stat">0.0L / 200L</span>
+                            <span id="card-percent-stat">0.0%</span>
+                        </div>
+                    </div>
+                </div>
+              <div class="card-action-footer">
+        <button class="manual-pump-btn-small" id="pump-btn" onclick="handleManualPumpToggle()">
+    <i class="fa-solid fa-power-off"></i> <span id="pump-btn-text">Manual Pump</span>
+</button>
+    </div>
+</div> </div> <section class="monitor-card">
+        <section class="monitor-card">
+            <div class="monitor-layout">
+                <div class="tank-visual-container">
+                    <div class="tank-cylindrical-outline">
+                        <div id="visual-water-fill" class="water-level-fill" style="height: 0%;">
+                            <span id="inner-percent">0%</span>
+                        </div>
+                    </div>
+                    <span class="visual-label">Live Tank Visual</span>
+                </div>
+
+                <div class="stats-tiles-column">
+                    <div class="info-tile">
+                        <label>Current Volume</label>
+                        <div class="large-value" id="monitor-volume">-- of --L</div>
+                    </div>
+                    <div class="info-tile">
+                        <label>Capacity %</label>
+                        <div class="progress-mini-bar">
+                            <div id="monitor-mini-bar" style="width: 0%;"></div>
+                        </div>
+                        <div class="stat-value" id="monitor-percent">--%</div>
+                    </div>
+                </div>
+
+                <div class="system-info-column">
+                    <div class="info-tile">
+                        <label>Pump Status</label>
+                        <div id="monitor-pump-status" class="status-off">Loading...</div>
+                    </div>
+                    <div class="info-tile">
+                        <label>Last Updated</label>
+                        <div class="timestamp" id="monitor-timestamp">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="monitor-footer">
+                <div class="footer-tag"><i class="fa-solid fa-robot"></i> Auto Shut-off: <b id="auto-mode-text">Checking...</b></div>
+                <div class="footer-tag"><i class="fa-solid fa-microchip"></i> Sensor: <b id="sensor-text">Disconnected</b></div>
+                <div class="footer-tag"><i class="fa-solid fa-wifi"></i> Network: <b id="network-text">Offline</b></div>
+            </div>
+        </section>
+    </section>
+</main>
+
+        <!--analytic part-->
+<section id="analytics-view" class="content-section" style="display: none;">
+    <div class="analytics-container">
+        
+        <header class="view-header">
+            <h1>System Analytics</h1>
+            <p>Comprehensive water usage analytics and insights</p>
+        </header>
+
+       <div class="ana-selector-bar">
+    <div class="selector-icon">
+        <i class="fas fa-database"></i> 
+    </div>
+    <div class="selector-content">
+        <label>Viewing Analytics for:</label>
+        <div class="select-wrapper">
+            <select id="tankSelect" onchange="updateAnalytics()">
+    <option value="all">Overall All Tanks</option>
+</select>
+        </div>
+        </div>
+</div>
+        <div class="ana-stats-row">
+            <div class="ana-stat-box blue">
+                <div class="stat-icon-wrapper">
+                    <i class="fas fa-tint"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="box-label">Total Consumption</span>
+                    <span id="ana-total-cons" class="box-value">0</span>
+                    <span class="box-sub">This week</span>
+                </div>
+            </div>
+
+            <div class="ana-stat-box green">
+                <div class="stat-icon-wrapper">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="box-label">Avg Daily Usage</span>
+                    <span id="ana-avg-usage" class="box-value">0</span>
+                    <span class="box-sub">Per day</span>
+                </div>
+            </div>
+
+            <div class="ana-stat-box purple">
+                <div class="stat-icon-wrapper">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="box-label">Monthly Trend</span>
+                    <span id="ana-monthly-trend" class="box-value">0%</span>
+                    <span class="box-sub">vs last month</span>
+                </div>
+            </div>
+
+            <div class="ana-stat-box orange">
+                <div class="stat-icon-wrapper">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="box-label">Efficiency Score</span>
+                    <span id="ana-eff-score" class="box-value">0</span>
+                    <span id="ana-eff-label" class="box-sub">Excellent</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ana-charts-middle">
+            <div class="ana-chart-card">
+                <h3>Weekly Consumption vs Refill</h3>
+                <div class="canvas-container">
+                    <canvas id="weeklyUsageChart"></canvas>
+                </div>
+            </div>
+            <div class="ana-chart-card">
+                <h3>Water Distribution by Tank</h3>
+                <div class="canvas-container">
+                    <canvas id="tankDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="ana-charts-bottom">
+            <div class="ana-chart-card">
+                <h3>6-Month Usage Trend</h3>
+                <div class="canvas-container">
+                    <canvas id="monthlyTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="ana-insights-bar">
+            <h4><i class="fas fa-lightbulb"></i> Usage Insights</h4>
+            <ul id="ana-insights-list">
+                <li>No current insights</li>
+            </ul>
+        </div>
+
+    </div>
+</section>
+<!--This is activity log part-->
+<section id="activity-log-view" class="content-section" style="display: none;">
+    <div class="activity-container">
+        <div class="activity-header">
+            <div class="title-group">
+                <h2>Activity Log</h2>
+                <p><span id="log-count-display">0</span> events recorded by System Boss</p>
+            </div>
+            <div id="live-monitor-status" class="live-status">
+                </div>
+        </div>
+
+        <div class="filter-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="log-search-input" placeholder="Search activities...">
+            </div>
+            <select id="log-filter-tank" class="filter-dropdown">
+                <option value="all">All Tanks</option>
+                </select>
+            <select id="log-filter-status" class="filter-dropdown">
+                <option value="all">All Status</option>
+                <option value="Success">Success</option>
+                <option value="Warning">Warning</option>
+                <option value="Critical">Critical</option>
+            </select>
+        </div>
+
+        <div class="log-table-container">
+            <table class="boss-log-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Tank ID</th>
+                        <th>Action</th>
+                        <th>Status</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody id="activity-log-table-body">
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="summary-grid">
+            <div class="summary-box success-box">
+                <span>Success</span>
+                <strong id="stat-count-success">0</strong>
+            </div>
+            <div class="summary-box warning-box">
+                <span>Warning</span>
+                <strong id="stat-count-warning">0</strong>
+            </div>
+            <div class="summary-box error-box">
+                <span>Critical</span>
+                <strong id="stat-count-critical">0</strong>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--=================Tank Management=================-->
+<section id="tanks-view" class="content-section" style="display: none;">
+    <div class="tm-container">
+        
+        <div class="tm-dashboard-card">
+            <div class="tm-header-row">
+                <div class="tm-title-group">
+                    <h1>Tank Management</h1>
+                    <p>System Configuration for Tank ID: <strong id="tm-header-tank-id">---</strong></p>
+                </div>
+                <button class="tm-add-btn" onclick="openAddModal()">
+                    <i class="fas fa-plus"></i> Add Tank
+                </button>
+            </div>
+
+            <div class="tm-stats-grid">
+                <div class="tm-stat-box blue-bg">
+                    <span class="tm-stat-label">Total Tanks</span>
+                    <strong id="tm-total-tanks">0</strong>
+                </div>
+                <div class="tm-stat-box purple-bg">
+                    <span class="tm-stat-label">Total Capacity</span>
+                    <strong id="tm-total-capacity">0L</strong>
+                </div>
+                <div class="tm-stat-box green-bg">
+                    <span class="tm-stat-label">Current Volume</span>
+                    <strong id="tm-current-volume">0L</strong>
+                </div>
+                <div class="tm-stat-box yellow-bg">
+                    <span class="tm-stat-label">Avg Fill Level</span>
+                    <strong id="tm-avg-fill">0%</strong>
+                </div>
+            </div>
+
+            <div class="tm-search-row">
+                
+            </div>
+        </div>
+
+        <div class="tm-cards-grid" id="tm-cards-container">
+           
+        </div>
+    </div>
+</section> 
+<div id="tank-modal" class="tm-modal" style="display: none;">
+    <div class="tm-modal-content">
+        <div class="tm-modal-header">
+            <h2><i class="fas fa-cog"></i> Tank Configuration</h2>
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+        </div>
+        
+ <form id="tank-config-form">
+    <div id="scanner-section" style="display: block; text-align: center; padding: 20px;">
+        <div class="form-group full-width">
+            <label style="color: #007bff; font-size: 1.2rem; display: block; margin-bottom: 10px;">
+                <i class="fas fa-qrcode"></i> Step 1: Scan Tank QR Code
+            </label>
+            <p>You must scan the device QR code first before you can fill up the form.</p>
+            
+            <div id="interactive-scanner" style="width: 100%; min-height: 250px; background: #f8f9fa; border: 2px dashed #ddd; border-radius: 10px; margin-top: 15px;"></div>
+            
+            <p id="scan-status" style="margin-top: 10px; color: #dc3545; font-weight: bold;">
+                <i class="fas fa-camera"></i> Waiting for camera...
+            </p>
+        </div>
+    </div>
+
+    <div id="form-section" style="display: none;">
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label for="tank-hardware-id">Hardware ID (ESP32 UID)</label>
+                <input type="text" id="tank-hardware-id" placeholder="Scanning result..." readonly style="background-color: #f0fdf4; border: 1px solid #22c55e;">
+                <small id="id-verification-note" style="color: #22c55e;">Verified via Scanner</small>
+            </div>
+
+      <div class="form-group full-width">
+    <label for="tank-name">Tank Name</label>
+    <input type="text" id="tank-name" placeholder="Enter tank name" required>
+</div>
+
+<div class="form-group">
+    <label for="tank-height">Tank Height (cm)</label>
+    <input type="number" id="tank-height" min="20" max="500" placeholder="150">
+    <small>Professional Range: 20cm - 500cm</small>
+</div>
+
+<div class="form-group">
+    <label for="tank-capacity">Max Capacity (Liters)</label>
+    <input type="number" id="tank-capacity" min="10" max="10000" placeholder="1000">
+    <small>&nbsp;</small> 
+</div>
+
+<div class="form-group">
+    <label for="lower-threshold">Lower Threshold (%) - Pump ON</label>
+    <select id="lower-threshold">
+        <option value="10">10%</option>
+        <option value="20" selected>20% Recommended</option>
+        <option value="30">30%</option>
+        <option value="40">40%</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="upper-threshold">Upper Threshold (%) - Pump OFF</label>
+    <select id="upper-threshold">
+        <option value="80">80%</option>
+        <option value="85">85%</option>
+        <option value="90" selected>90% Recommended</option>
+        <option value="95">95%</option>
+    </select>
+</div>
+            <div class="form-group full-width">
+                <label>Operation Mode</label>
+                <div class="toggle-container">
+                    <span>Manual</span>
+                    <label class="switch">
+                        <input type="checkbox" id="op-mode" checked>
+                        <span class="slider round"></span>
+                    </label>
+                    <span>Automatic</span>
+                </div>
+            </div>
+
+            <div class="modal-note">
+                <p><i class="fas fa-info-circle"></i> Note: Ensure Email/SMS alerts are enabled in System Settings for critical notifications.</p>
+            </div>
+
+ <div class="modal-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn-primary" id="save-tank-btn">Save Configuration</button>
+            </div>
+
+        </div>
+    </div>
+</form>
+
+</div> <!-- tm-modal-content -->
+</div> <!-- tank-modal END -->
+
+
+<!-- ======== SETTINGS VIEW ======== -->
+<section id="settings-view" class="content-section" style="display:none;">
+    <div class="settings-container">        
+        
+   <div class="settings-card header-panel">
+            <div class="header-group">
+                <i class="fas fa-bell header-main-icon"></i>
+                <div class="header-text">
+                    <h2>Notification Settings</h2>
+                </div>
+            </div>
+            
+            <div class="appearance-control">
+                <div class="channel-identity">
+                    <i class="fas fa-palette"></i>
+                    <span>Theme Color Picker</span>
+                </div>
+                <input type="range" id="theme-slider" min="0" max="360" value="220" class="theme-range-slider">
+            </div>
+        </div> <div class="dual-channel-row">
+            <div class="settings-card channel-box">
+                <div class="channel-header">
+                    <span class="channel-identity">
+                        <i class="fas fa-envelope-open-text"></i> Email Notifications
+                    </span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="email-notif-toggle" checked>
+                        <span class="slider-round"></span>
+                    </label>
+                </div>
+                <div class="input-group">
+    <label for="email-input">Email Address</label>
+    <input type="email" id="email-input" class="custom-field locked-field" readonly>
+</div>
+            </div>
+
+            <div class="settings-card channel-box">
+                <div class="channel-header">
+                    <span class="channel-identity">
+                        <i class="fas fa-comment-alt sms-green-icon"></i> SMS Notifications
+                    </span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="sms-notif-toggle" checked>
+                        <span class="slider-round"></span>
+                    </label>
+                </div>
+                <div class="input-group">
+                    <label for="phone-input">Phone Number</label>
+                    <input type="text" id="phone-input" placeholder="+63 09051155652" class="custom-field">
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-card security-panel">
+            <div class="header-group">
+                <i class="fas fa-shield-alt header-main-icon"></i>
+                <div class="header-text">
+                    <h2>Security Configuration</h2>
+                </div>
+            </div>
+            
+            <div class="security-form-grid">
+                <div class="input-group">
+                    <label>Current Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="settings-curr-pass" placeholder="••••••••" class="custom-field">
+                        <i class="fas fa-eye-slash password-toggle-icon"></i>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>New Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="settings-new-pass" placeholder="New Password" class="custom-field">
+                        <i class="fas fa-eye-slash password-toggle-icon"></i>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Confirm New Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="settings-confirm-pass" placeholder="Confirm Password" class="custom-field">
+                        <i class="fas fa-eye-slash password-toggle-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="action-btn-save" onclick="saveUserSettings()">
+    <i class="fas fa-save"></i> Save All Settings
+</button>
+
+     <div class="settings-card policy-panel">
+            <h3><i class="fas fa-info-circle"></i> Important Information</h3>
+            <ul class="policy-list">
+                <li>Email and SMS notifications require a stable internet connection.</li>
+                <li>The system automatically shuts off the pump at 95% capacity regardless of alert settings.</li>
+                <li>Low level alerts help prevent pump damage from dry running.</li>
+                <li>This system is designed for academic research and residential use.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     SAFETY TIPS SECTION (NEW)
+     ===================================================== -->
+<section id="safety-tips-view" class="content-section" style="display:none;">
+    <div class="settings-container">
+        <div class="settings-card header-panel">
+            <div class="header-group">
+                <i class="fas fa-shield-heart header-main-icon" style="color:#27ae60;"></i>
+                <div class="header-text">
+                    <h2>Weekly Maintenance Tips</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-card" style="padding:28px;">
+
+            <div style="margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid rgba(255,255,255,0.07);">
+                <h3 style="color:var(--primary-color,#4a9eff);margin-bottom:10px;font-size:1rem;">
+                    <i class="fas fa-satellite-dish"></i>&nbsp; 1. Sensor Cleaning (Ultrasonic Sensor)
+                </h3>
+                <p style="margin-bottom:6px;line-height:1.7;"><strong>English:</strong> Gently wipe the sensor lens with a dry, lint-free cloth to remove moisture or dust buildup that may cause false readings.</p>
+                <p style="line-height:1.7;color:var(--text-secondary,#aaa);"><strong>Tagalog:</strong> Dahang-dahang punasan ang lente ng sensor gamit ang tuyo at malinis na tela para maalis ang hamog o alikabok na nagiging sanhi ng maling reading.</p>
+            </div>
+
+            <div style="margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid rgba(255,255,255,0.07);">
+                <h3 style="color:var(--primary-color,#4a9eff);margin-bottom:10px;font-size:1rem;">
+                    <i class="fas fa-droplet"></i>&nbsp; 2. Tank Sediment Check
+                </h3>
+                <p style="margin-bottom:6px;line-height:1.7;"><strong>English:</strong> Regularly check the inside of the tank for any accumulated dirt or sludge to ensure that the water your family uses remains clean and safe, while also protecting the pump from clogging or damage.</p>
+                <p style="line-height:1.7;color:var(--text-secondary,#aaa);"><strong>Tagalog:</strong> Regular na suriin ang loob ng tanke kung may naipong dumi o putik, upang masiguro na ang tubig na ginagamit ng iyong pamilya ay mananatiling malinis at ligtas, habang pinoprotektahan din ang pump para hindi ito mabara o masira.</p>
+            </div>
+
+            <div style="margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid rgba(255,255,255,0.07);">
+                <h3 style="color:var(--primary-color,#4a9eff);margin-bottom:10px;font-size:1rem;">
+                    <i class="fas fa-bolt"></i>&nbsp; 3. Control Box &amp; Wiring
+                </h3>
+                <p style="margin-bottom:6px;line-height:1.7;"><strong>English:</strong> Ensure the control box is tightly sealed and free from ants or insects. Check for loose wire connections to prevent system timeouts.</p>
+                <p style="line-height:1.7;color:var(--text-secondary,#aaa);"><strong>Tagalog:</strong> Siguraduhing selyado ang control box at walang langgam o insekto sa loob. I-check kung may maluwag na wire para hindi mag-error ang system.</p>
+            </div>
+
+            <div>
+                <h3 style="color:var(--primary-color,#4a9eff);margin-bottom:10px;font-size:1rem;">
+                    <i class="fas fa-gear"></i>&nbsp; 4. Pump Observation
+                </h3>
+                <p style="margin-bottom:6px;line-height:1.7;"><strong>English:</strong> Listen for unusual vibrating sounds from the pump. Unusual noise may indicate air in the pipes or mechanical wear.</p>
+                <p style="line-height:1.7;color:var(--text-secondary,#aaa);"><strong>Tagalog:</strong> Pakinggan kung may kakaibang ingay ang pump. Ang sobrang ingay ay maaaring senyales na may hangin sa tubo o may sira na ang makina.</p>
+            </div>
+        </div>
+
+        <div class="settings-card policy-panel">
+            <h3><i class="fas fa-phone-alt"></i> &nbsp;Contact &amp; Support</h3>
+            <ul class="policy-list">
+                <li>For upgrade inquiries &amp; installation services: <strong>+63 905 115 5652</strong></li>
+                <li>For technical support &amp; maintenance: <strong>reginebagares27@gmail.com</strong></li>
+                <li>Our support team will assist you with system maintenance, monitoring issues, or any technical concerns.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     NEED HELP / SUPPORT TICKET SECTION (NEW)
+     ===================================================== -->
+<section id="need-help-view" class="content-section" style="display:none;">
+    <div class="settings-container">
+        <div class="settings-card header-panel">
+            <div class="header-group">
+                <i class="fas fa-headset header-main-icon" style="color:#9b59b6;"></i>
+                <div class="header-text">
+                    <h2>Need Help?</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-card" style="padding:28px;">
+            <div class="input-group" style="margin-bottom:18px;">
+                <label style="font-weight:600;display:block;margin-bottom:8px;">Category</label>
+                <select id="help-category" class="custom-field" style="width:100%;padding:11px 14px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:inherit;font-size:0.95rem;">
+                    <option>Technical Issue</option>
+                    <option>Sensor Problem</option>
+                    <option>Pump Not Working</option>
+                    <option>App / Website Issue</option>
+                    <option>QR Code Problem</option>
+                    <option>General Question</option>
+                </select>
+            </div>
+
+            <div class="input-group" style="margin-bottom:18px;">
+                <label style="font-weight:600;display:block;margin-bottom:8px;">Describe Your Concern</label>
+                <textarea id="help-message" class="custom-field" rows="6"
+                    placeholder="Ilagay dito ang inyong concern o tanong... (You can type in Filipino or English)"
+                    style="width:100%;padding:11px 14px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:inherit;font-size:0.95rem;resize:vertical;"></textarea>
+            </div>
+
+            <div class="input-group" style="margin-bottom:24px;">
+                <label style="font-weight:600;display:block;margin-bottom:8px;">
+                    <i class="fas fa-paperclip"></i>&nbsp; Attach Photo or Video (optional)
+                </label>
+                <input type="file" id="help-attachment" accept="image/*,video/*" class="custom-field"
+                    style="width:100%;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:inherit;">
+                <small style="color:#888;margin-top:5px;display:block;">Accepted: JPG, PNG, MP4, MOV — Max 10MB</small>
+            </div>
+
+            <button id="help-submit-btn" class="action-btn-save" onclick="submitHelpTicket()">
+                <i class="fas fa-paper-plane"></i> Submit Concern
+            </button>
+
+            <div id="help-submit-status"></div>
+        </div>
+
+        <div class="settings-card policy-panel">
+            <h3><i class="fas fa-info-circle"></i> &nbsp;What happens after you submit?</h3>
+            <ul class="policy-list">
+                <li>Your concern will be received by our support team immediately.</li>
+                <li>We will respond via your registered email address.</li>
+                <li>For urgent hardware issues, call: <strong>+63 905 115 5652</strong></li>
+                <li>All submitted concerns are kept private and only visible to authorized admins.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script src="dashboard.js"></script>
+</body>
+</html>
