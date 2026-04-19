@@ -91,4 +91,35 @@ public class AdminController {
         d.put("phoneNumber", u.getPhoneNumber()); d.put("tanks", tankRepository.findByUser(u));
         return ResponseEntity.ok(d);
     }
+
+    @DeleteMapping("/delete-user")
+    public ResponseEntity<?> deleteUser(@RequestParam String email) {
+        Optional<User> opt = userRepository.findByEmail(email);
+        if (opt.isEmpty()) return ResponseEntity.status(404).body("User not found.");
+        User u = opt.get();
+        // Delete all tanks belonging to this user first
+        List<TankData> tanks = tankRepository.findByUser(u);
+        tankRepository.deleteAll(tanks);
+        // Delete the user
+        userRepository.delete(u);
+        return ResponseEntity.ok(Map.of("message", "User " + email + " deleted successfully."));
+    }
+
+    @GetMapping("/support/all")
+    public ResponseEntity<?> getAllTickets() {
+        return ResponseEntity.ok(ticketRepository.findAll());
+    }
+
+    @PostMapping("/support/update")
+    public ResponseEntity<?> updateTicket(@RequestBody Map<String, String> body) {
+        String idStr = body.get("id");
+        String status = body.get("status");
+        if (idStr == null || status == null) return ResponseEntity.badRequest().body("Missing id or status.");
+        Optional<com.tank.system.model.SupportTicket> opt = ticketRepository.findById(Long.parseLong(idStr));
+        if (opt.isEmpty()) return ResponseEntity.status(404).body("Ticket not found.");
+        com.tank.system.model.SupportTicket ticket = opt.get();
+        ticket.setStatus(status);
+        ticketRepository.save(ticket);
+        return ResponseEntity.ok(Map.of("message", "Ticket updated."));
+    }
 }
