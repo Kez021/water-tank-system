@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: water-tank-backend
+    env: java
+    buildCommand: mvn clean package -DskipTests
+    startCommand: java -Dserver.port=$PORT -jar target/system-0.0.1-SNAPSHOT.jar
+    rootDir: wt9/Backend_Java_Spring/system/system
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
