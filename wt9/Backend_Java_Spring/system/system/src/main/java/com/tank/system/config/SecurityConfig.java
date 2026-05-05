@@ -30,6 +30,13 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers(
+                    "/",
+                    "/*.html",
+                    "/*.css",
+                    "/*.js",
+                    "/*.png",
+                    "/*.jpg",
+                    "/image/**",
                     "/api/tank/**",
                     "/api/users/**",
                     "/api/settings/**",
@@ -49,7 +56,7 @@ public class SecurityConfig {
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         // Allow all origins (credentials=false, so wildcard is safe).
-        // This covers localhost, Live Server (any port), file://, and Railway.
+        // This covers localhost, Live Server (any port), file://, and Render.
         config.setAllowedOriginPatterns(List.of("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
