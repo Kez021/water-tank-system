@@ -1,0 +1,699 @@
+/* ============================================================
+   MOBILE RESPONSIVE CSS - Water Tank Dashboard
+   ONLY applies at max-width: 768px — desktop is UNCHANGED
+   ============================================================ */
+
+/* ===== FLOATING QUICK ACTION BUTTON (all screen sizes for mobile) ===== */
+#mobile-fab {
+    display: none;
+}
+
+/* ===== BOTTOM NAV (hidden on desktop) ===== */
+.mobile-bottom-nav {
+    display: none;
+}
+
+/* ===== MOBILE HEADER (hidden on desktop) ===== */
+.mobile-header {
+    display: none;
+}
+
+/* ===== SLIDE-OUT DRAWER OVERLAY ===== */
+.mobile-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1200;
+    backdrop-filter: blur(3px);
+}
+
+/* ============================================================
+   MOBILE BREAKPOINT - max-width: 768px
+   ============================================================ */
+@media (max-width: 768px) {
+
+    /* ===== HIDE DESKTOP SIDEBAR ===== */
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 280px !important;
+        z-index: 1300;
+    }
+
+    .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+
+    /* ===== MOBILE OVERLAY (for sidebar drawer) ===== */
+    .mobile-overlay {
+        display: block;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .mobile-overlay.active {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    /* ===== MOBILE TOP HEADER ===== */
+    .mobile-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1100;
+        height: 56px;
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(12px);
+        padding: 0 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+        border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .mobile-header-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .mobile-header-brand img {
+        width: 34px;
+        height: 34px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .mobile-header-brand span {
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: #1a1a2e;
+        line-height: 1.2;
+    }
+
+    .mobile-hamburger {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 10px;
+        color: #333;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+    }
+
+    .mobile-hamburger:active {
+        background: rgba(0,0,0,0.08);
+    }
+
+    .mobile-header-status {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .mobile-status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #22c55e;
+        animation: pulse-green 2s infinite;
+    }
+
+    @keyframes pulse-green {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(1.2); }
+    }
+
+    /* ===== MAIN CONTENT — push down for header, up for bottom nav ===== */
+    .main-content {
+        margin-left: 0 !important;
+        padding-top: 68px !important;
+        padding-bottom: 80px !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        width: 100% !important;
+    }
+
+    /* ===== BOTTOM NAVIGATION BAR ===== */
+    .mobile-bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1100;
+        height: 64px;
+        background: rgba(255,255,255,0.97);
+        backdrop-filter: blur(16px);
+        border-top: 1px solid rgba(0,0,0,0.1);
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+        padding: 0 4px;
+    }
+
+    .mob-nav-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        cursor: pointer;
+        padding: 8px 4px;
+        border-radius: 12px;
+        margin: 6px 2px;
+        transition: all 0.2s ease;
+        border: none;
+        background: none;
+        color: #888;
+        font-size: 0.62rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .mob-nav-item i {
+        font-size: 1.15rem;
+    }
+
+    .mob-nav-item.active {
+        color: var(--primary-color, #4a9eff);
+        background: hsla(var(--primary-hue, 220), 70%, 95%, 1);
+    }
+
+    .mob-nav-item:active {
+        transform: scale(0.92);
+    }
+
+    /* ===== DASHBOARD VIEW OVERRIDES ===== */
+    .view-header {
+        flex-direction: column !important;
+        gap: 12px !important;
+        padding: 0 0 12px 0 !important;
+    }
+
+    .view-header h1 {
+        font-size: 1.25rem !important;
+    }
+
+    .view-header p {
+        font-size: 0.8rem !important;
+    }
+
+    .tank-select-container {
+        width: 100% !important;
+    }
+
+    .tank-select-container select {
+        width: 100% !important;
+        min-height: 44px;
+        font-size: 0.9rem;
+    }
+
+    /* ===== TANK CARDS GRID — single column ===== */
+    .tank-cards-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    /* ===== MAIN TANK CARD — Mobile Priority Layout ===== */
+    #main-tank-card {
+        border-radius: 18px !important;
+        padding: 16px !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
+    }
+
+    .status-indicator-top {
+        gap: 8px !important;
+    }
+
+    .progress-bar-container {
+        height: 14px !important;
+        border-radius: 7px !important;
+    }
+
+    .progress-fill {
+        border-radius: 7px !important;
+    }
+
+    .stats-row {
+        font-size: 0.85rem !important;
+    }
+
+    .manual-pump-btn-small {
+        min-height: 48px !important;
+        font-size: 0.9rem !important;
+        width: 100% !important;
+        border-radius: 12px !important;
+    }
+
+    /* ===== MONITOR CARD (Live Tank Visual) ===== */
+    .monitor-card {
+        margin: 0 !important;
+        border-radius: 18px !important;
+        padding: 16px !important;
+        overflow: hidden;
+    }
+
+    .monitor-layout {
+        flex-direction: column !important;
+        gap: 16px !important;
+        display: flex !important;
+    }
+
+    /* Tank Visual - centered and prominent */
+    .tank-visual-container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        width: 100% !important;
+    }
+
+    .tank-cylindrical-outline {
+        width: 130px !important;
+        height: 200px !important;
+    }
+
+    /* Stats — side by side row on mobile */
+    .stats-tiles-column,
+    .system-info-column {
+        width: 100% !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+    }
+
+    .info-tile {
+        padding: 12px !important;
+        border-radius: 12px !important;
+        background: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+
+    .info-tile label {
+        font-size: 0.7rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        color: #64748b !important;
+    }
+
+    .large-value {
+        font-size: 1rem !important;
+        font-weight: 800 !important;
+    }
+
+    .stat-value {
+        font-size: 1rem !important;
+        font-weight: 800 !important;
+    }
+
+    .progress-mini-bar {
+        height: 10px !important;
+        border-radius: 5px !important;
+        margin: 6px 0 !important;
+    }
+
+    /* Monitor Footer — stack vertically */
+    .monitor-footer {
+        flex-direction: column !important;
+        gap: 8px !important;
+        margin-top: 14px !important;
+    }
+
+    .footer-tag {
+        width: 100% !important;
+        padding: 10px 14px !important;
+        border-radius: 10px !important;
+        font-size: 0.82rem !important;
+        min-height: 40px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+
+    /* ===== MOBILE FAB (Floating Action Buttons) ===== */
+    #mobile-fab {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        position: fixed;
+        right: 16px;
+        bottom: 80px;
+        z-index: 1050;
+    }
+
+    .fab-btn {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        transition: all 0.2s ease;
+        color: white;
+    }
+
+    .fab-btn:active {
+        transform: scale(0.9);
+    }
+
+    .fab-pump {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+
+    .fab-refresh {
+        background: linear-gradient(135deg, #22c55e, #15803d);
+    }
+
+    .fab-auto {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    /* ===== ANALYTICS VIEW ===== */
+    .analytics-container {
+        padding: 0 !important;
+    }
+
+    .ana-stats-row {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+    }
+
+    .ana-stat-box {
+        padding: 14px !important;
+        border-radius: 14px !important;
+    }
+
+    .box-label {
+        font-size: 0.7rem !important;
+    }
+
+    .box-value {
+        font-size: 1.3rem !important;
+    }
+
+    .ana-charts-middle {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .ana-chart-card {
+        padding: 16px !important;
+        border-radius: 14px !important;
+    }
+
+    .ana-chart-card h3 {
+        font-size: 0.9rem !important;
+    }
+
+    .canvas-container {
+        height: 200px !important;
+    }
+
+    .ana-selector-bar {
+        flex-direction: column !important;
+        gap: 10px !important;
+        padding: 14px !important;
+        border-radius: 14px !important;
+    }
+
+    /* ===== ACTIVITY LOG VIEW ===== */
+    .activity-container {
+        padding: 0 !important;
+    }
+
+    .activity-header {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    .filter-bar {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+
+    .search-box,
+    .filter-dropdown {
+        width: 100% !important;
+        min-height: 44px !important;
+    }
+
+    .log-table-container {
+        overflow-x: auto !important;
+        border-radius: 14px !important;
+    }
+
+    .boss-log-table th,
+    .boss-log-table td {
+        font-size: 0.75rem !important;
+        padding: 10px 8px !important;
+        white-space: nowrap;
+    }
+
+    .summary-grid {
+        grid-template-columns: 1fr 1fr 1fr !important;
+        gap: 8px !important;
+    }
+
+    .summary-box {
+        padding: 12px 8px !important;
+        border-radius: 12px !important;
+        text-align: center !important;
+    }
+
+    /* ===== TANK MANAGEMENT VIEW ===== */
+    .tm-container {
+        padding: 0 !important;
+    }
+
+    .tm-dashboard-card {
+        padding: 16px !important;
+        border-radius: 16px !important;
+    }
+
+    .tm-header-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+
+    .tm-add-btn {
+        width: 100% !important;
+        min-height: 48px !important;
+        border-radius: 12px !important;
+        font-size: 0.95rem !important;
+    }
+
+    .tm-stats-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+    }
+
+    .tm-stat-box {
+        padding: 14px !important;
+        border-radius: 12px !important;
+    }
+
+    .tm-stat-label {
+        font-size: 0.7rem !important;
+    }
+
+    .tm-cards-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+    }
+
+    .tm-card {
+        aspect-ratio: unset !important;
+        padding: 18px !important;
+        border-radius: 16px !important;
+    }
+
+    .tm-actions {
+        gap: 8px !important;
+        margin-top: 12px !important;
+    }
+
+    .tm-btn-edit,
+    .tm-btn-delete {
+        min-height: 44px !important;
+        border-radius: 10px !important;
+        font-size: 0.85rem !important;
+    }
+
+    /* ===== SETTINGS VIEW ===== */
+    .settings-container {
+        padding: 0 !important;
+    }
+
+    .dual-channel-row {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .settings-card {
+        padding: 16px !important;
+        border-radius: 14px !important;
+    }
+
+    .security-form-grid {
+        gap: 12px !important;
+    }
+
+    .action-btn-save {
+        width: 100% !important;
+        min-height: 50px !important;
+        border-radius: 12px !important;
+        font-size: 1rem !important;
+        margin: 16px 0 !important;
+    }
+
+    .custom-field {
+        min-height: 44px !important;
+        font-size: 16px !important; /* prevents iOS zoom */
+    }
+
+    /* ===== MODAL — full screen on mobile ===== */
+    .tm-modal-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+        border-radius: 20px 20px 0 0 !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        margin: 0 !important;
+        padding: 20px 16px !important;
+        animation: slideUp 0.3s ease-out !important;
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .form-group.full-width {
+        grid-column: span 1 !important;
+    }
+
+    .modal-actions {
+        grid-column: span 1 !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100% !important;
+        min-height: 48px !important;
+        border-radius: 12px !important;
+        font-size: 0.95rem !important;
+    }
+
+    /* ===== NEED HELP VIEW ===== */
+    #help-submit-btn {
+        width: 100% !important;
+        min-height: 50px !important;
+        border-radius: 12px !important;
+    }
+
+    /* ===== STATUS COLOR CODING ===== */
+    .status-critical { color: #ef4444 !important; font-weight: 800; }
+    .status-warning  { color: #f59e0b !important; font-weight: 800; }
+    .status-normal   { color: #22c55e !important; font-weight: 800; }
+
+    /* ===== LEVEL UPDATE ANIMATION ===== */
+    @keyframes levelPulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.6; }
+        100% { opacity: 1; }
+    }
+
+    .level-updating {
+        animation: levelPulse 0.8s ease-in-out;
+    }
+
+    /* ===== GENERAL MOBILE TYPOGRAPHY ===== */
+    body {
+        font-size: 15px;
+    }
+
+    h1 { font-size: 1.3rem !important; }
+    h2 { font-size: 1.1rem !important; }
+    h3 { font-size: 0.95rem !important; }
+
+    /* ===== PREVENT HORIZONTAL SCROLL ===== */
+    .dashboard-wrapper,
+    .main-content {
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+
+    /* ===== TANK CARD STATUS BADGE ===== */
+    #card-status-text {
+        font-size: 0.8rem !important;
+        font-weight: 800 !important;
+    }
+
+    /* ===== QUICK CONTROLS PILL ===== */
+    .mobile-quick-pill {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: white;
+        border-radius: 16px;
+        padding: 12px 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        border: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .mobile-quick-pill-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .mobile-quick-pill-value {
+        font-size: 1rem;
+        font-weight: 800;
+    }
+}
+
+/* ===== TABLET ADJUSTMENTS (769px - 1024px) ===== */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .monitor-layout {
+        flex-wrap: wrap;
+    }
+    
+    .tank-cylindrical-outline {
+        width: 120px;
+        height: 180px;
+    }
+
+    .ana-stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

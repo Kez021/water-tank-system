@@ -9,8 +9,61 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
     
     <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="mobile.css">
 </head>
 <body>
+
+<!-- MOBILE OVERLAY (for sidebar drawer) -->
+<div class="mobile-overlay" id="mobile-overlay" onclick="closeMobileMenu()"></div>
+
+<!-- MOBILE TOP HEADER (only visible on mobile) -->
+<header class="mobile-header">
+    <button class="mobile-hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+    <div class="mobile-header-brand">
+        <img src="image/tanklogo.png" alt="Logo">
+        <span>Automated<br>Overhead Tank</span>
+    </div>
+    <div class="mobile-header-status">
+        <div class="mobile-status-dot"></div>
+        <span style="color:#22c55e;">Live</span>
+    </div>
+</header>
+
+<!-- MOBILE FAB (Floating Action Buttons) -->
+<div id="mobile-fab">
+    <button class="fab-btn fab-refresh" onclick="location.reload()" title="Refresh">
+        <i class="fa-solid fa-rotate-right"></i>
+    </button>
+    <button class="fab-btn fab-pump" onclick="handleManualPumpToggle()" title="Toggle Pump">
+        <i class="fa-solid fa-power-off"></i>
+    </button>
+</div>
+
+<!-- MOBILE BOTTOM NAVIGATION BAR -->
+<nav class="mobile-bottom-nav">
+    <button class="mob-nav-item active" id="mob-nav-dashboard" onclick="mobileNav('dashboard-view', this)">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Dashboard</span>
+    </button>
+    <button class="mob-nav-item" id="mob-nav-analytics" onclick="mobileNav('analytics-view', this)">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Analytics</span>
+    </button>
+    <button class="mob-nav-item" id="mob-nav-activity" onclick="mobileNav('activity-log-view', this)">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>Logs</span>
+    </button>
+    <button class="mob-nav-item" id="mob-nav-tanks" onclick="mobileNav('tanks-view', this)">
+        <i class="fa-solid fa-droplet"></i>
+        <span>Tanks</span>
+    </button>
+    <button class="mob-nav-item" id="mob-nav-settings" onclick="mobileNav('settings-view', this)">
+        <i class="fa-solid fa-gear"></i>
+        <span>Settings</span>
+    </button>
+</nav>
 
 <div class="dashboard-wrapper">
     <aside class="sidebar">
@@ -702,5 +755,62 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script src="dashboard.js"></script>
+
+<script>
+/* ===== MOBILE NAVIGATION & MENU ===== */
+function toggleMobileMenu() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('mobile-overlay');
+    sidebar.classList.toggle('mobile-open');
+    overlay.classList.toggle('active');
+}
+
+function closeMobileMenu() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('mobile-overlay');
+    sidebar.classList.remove('mobile-open');
+    overlay.classList.remove('active');
+}
+
+function mobileNav(viewId, btn) {
+    document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+    const target = document.getElementById(viewId);
+    if (target) target.style.display = 'block';
+
+    document.querySelectorAll('.mob-nav-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.view === viewId) item.classList.add('active');
+    });
+
+    if (viewId === 'analytics-view' && typeof updateAnalytics === 'function') updateAnalytics();
+    if (viewId === 'activity-log-view' && typeof loadActivityLog === 'function') loadActivityLog();
+    if (viewId === 'need-help-view' && typeof loadMyTickets === 'function') loadMyTickets();
+    
+    closeMobileMenu();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.nav-item[data-view]').forEach(item => {
+        item.addEventListener('click', () => {
+            const viewId = item.dataset.view;
+            const mobileMap = {
+                'dashboard-view': 'mob-nav-dashboard',
+                'analytics-view': 'mob-nav-analytics',
+                'activity-log-view': 'mob-nav-activity',
+                'tanks-view': 'mob-nav-tanks',
+                'settings-view': 'mob-nav-settings'
+            };
+            document.querySelectorAll('.mob-nav-item').forEach(b => b.classList.remove('active'));
+            const mobBtn = document.getElementById(mobileMap[viewId]);
+            if (mobBtn) mobBtn.classList.add('active');
+            closeMobileMenu();
+        });
+    });
+});
+</script>
 </body>
 </html>
