@@ -9,7 +9,7 @@
 
 const API_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
     ? "http://localhost:8080"
-    : "https://water-tank-system-production.up.railway.app";
+    : "https://water-tank-backend-4sje.onrender.com";
 
 /* ===== ADMIN AUTH =====
    Credentials are validated by the backend at POST /api/admin/login.
