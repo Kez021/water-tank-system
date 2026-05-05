@@ -1,12 +1,12 @@
 /**
  * ============================================================
  * DEPLOYMENT CONFIG — app.js
- * For LOCAL testing: keep API_URL = "http://localhost:8080"
+ * For LOCAL testing: keep RAILWAY_URL = "http://localhost:8080"
  * After Railway deployment: change to your Railway URL
  * ============================================================
  */
 // ✅ AUTO-DETECT: Uses localhost when running locally, Railway when online
-const API_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+const RAILWAY_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
   ? "http://localhost:8080"
   : "https://water-tank-system-production.up.railway.app";
 
@@ -17,9 +17,9 @@ const API_URL = (window.location.hostname === "localhost" || window.location.hos
 
 document.addEventListener("DOMContentLoaded", async () => {
     
-    // --- GLOBAL CONFIGURATION (uses API_URL from top of file) ---
-    const baseUrl = `${API_URL}/api/tank`;
-    const userApiUrl = `${API_URL}/api/users`;
+    // --- GLOBAL CONFIGURATION (uses RAILWAY_URL from top of file) ---
+    const baseUrl = `${RAILWAY_URL}/api/tank`;
+    const userApiUrl = `${RAILWAY_URL}/api/users`;
 
     /* ==========================================================
        1. UI UTILITIES: Password Toggle Logic
@@ -134,7 +134,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         registerForm.addEventListener("submit", async (e) => {
             e.preventDefault();
-            const tankId = tankInput.value.trim(); // Optional — user can add tanks later from dashboard
+            const tankId = tankInput.value.trim();
+            if (!tankId) return alert("Please scan the device QR code first.");
 
             try {
                 const payload = {
@@ -152,7 +153,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 });
 
                 if (regRes.ok) {
-                    alert("Account created successfully! Please log in.");
+                    alert("Success: Account created!");
                     window.location.href = "login.html";
                 } else {
                     alert("Registration Failed: " + await regRes.text());
@@ -184,13 +185,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 if (response.ok) {
                     const data = await response.json();
-                    localStorage.clear();
+                    localStorage.clear(); 
 
                     // 2. Store session flags and display names.
                     localStorage.setItem("isLoggedIn", "true");
                     localStorage.setItem("clientName", data.fullName);
                     localStorage.setItem("userName", data.fullName);
-
+                    
                     /**
                      * 3. DATA ISOLATION KEY
                      * Store the database-verified email. This serves as the unique identifier
@@ -198,18 +199,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                      */
                     localStorage.setItem("userEmail", data.email);
                     window.location.href = "dashboard.html";
-                } else if (response.status === 429) {
-                    // IP locked out by backend (5 failed attempts / 15 min)
-                    let mins = 15;
-                    try {
-                        const data = await response.json();
-                        if (data && data.minutesLeft) mins = data.minutesLeft;
-                        alert(data.message || `Too many failed attempts. Try again in ${mins} minutes.`);
-                    } catch (_) {
-                        alert(`Too many failed attempts. Try again in ${mins} minutes.`);
-                    }
                 } else {
-                    alert("Login Failed. Please check your email and password.");
+                    alert("Login Failed.");
                 }
             } catch (err) {
                 console.error(err);

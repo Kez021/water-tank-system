@@ -1,10 +1,10 @@
 /* ============================================================
    DEPLOYMENT CONFIG — dashboard.js
-   For LOCAL testing: keep API_URL = "http://localhost:8080"
+   For LOCAL testing: keep RAILWAY_URL = "http://localhost:8080"
    After Railway deployment: change to your Railway URL
    ============================================================ */
 // ✅ AUTO-DETECT: Uses localhost when running locally, Railway when online
-const API_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+const RAILWAY_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
   ? "http://localhost:8080"
   : "https://water-tank-system-production.up.railway.app";
 
@@ -128,7 +128,7 @@ if (configForm) {
  * Attaches the save function to the Save button to update
  * user preferences in the backend repository.
  */
-const saveSettingsBtn = document.getElementById("save-settings-btn");
+const saveSettingsBtn = document.querySelector('.action-btn-save');
 if (saveSettingsBtn) {
     saveSettingsBtn.addEventListener('click', saveUserSettings);
 }
@@ -182,7 +182,7 @@ window.openAddModal = function() {
 // Function to EDIT an existing Tank
 window.openEditModal = async function(tankId) {
     try {
-        const response = await fetch(`${API_URL}/api/tank/details/${tankId}`);
+        const response = await fetch(`${RAILWAY_URL}/api/tank/details/${tankId}`);
         if (!response.ok) return alert("Could not fetch tank details.");
         
         const tank = await response.json();
@@ -230,7 +230,7 @@ async function handleFormSubmit(e) {
     const method = mode === "add" ? 'POST' : 'PUT';
 
     try {
-        const res = await fetch(`${API_URL}${url}`, {
+        const res = await fetch(`${RAILWAY_URL}${url}`, {
             method: method,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -316,7 +316,7 @@ function initializeQRScanner() {
 async function fetchTankDetails(tankId) {
     if (!tankId || tankId === "---") return;
     try {
-        const response = await fetch(`${API_URL}/api/tank/details/${tankId}`);
+        const response = await fetch(`${RAILWAY_URL}/api/tank/details/${tankId}`);
         if (response.ok) {
             const tank = await response.json();
             updateDashboardUI(tank);
@@ -342,70 +342,47 @@ function stopScanner() {
    ============================================================ */
 
 async function fetchInitialData(email) {
-    const tmCardsContainer = document.getElementById('tm-cards-container');
-    if (tmCardsContainer) {
-        tmCardsContainer.innerHTML = '<div style="padding:20px;color:#64748b;">Loading your tanks…</div>';
-    }
     try {
-        const response = await fetch(`${API_URL}/api/tank/user-tanks?email=${encodeURIComponent(email)}`);
-        if (!response.ok) {
-            console.error("user-tanks request failed:", response.status);
-            displayNoTankState();
-            return;
-        }
+        const response = await fetch(`${RAILWAY_URL}/api/tank/user-tanks?email=${email}`);
         const tanks = await response.json();
-        console.log("LOG: user-tanks response →", tanks);
 
-        if (Array.isArray(tanks) && tanks.length > 0) {
-            // Defensive normalization so a single bad/null field can't break the whole render
-            allTanks = tanks.map(t => ({
-                ...t,
-                waterLevel: Number.isFinite(t.waterLevel) ? t.waterLevel : 0,
-                maxCapacity: Number.isFinite(t.maxCapacity) ? t.maxCapacity : 0,
-                tankName: t.tankName || ('Tank ' + (t.tankId || '')),
-                pumpStatus: t.pumpStatus || 'Off',
-                isAutomatic: t.isAutomatic !== false
-            }));
-            renderTankManagement(allTanks);
-            renderDashboardSwitcher(allTanks);
-
+        if (tanks && tanks.length > 0) {
+            allTanks = tanks;
+            renderTankManagement(tanks);
+            renderDashboardSwitcher(tanks);
+            
             // Global Stats Update
-            const totalTanksEl = document.getElementById('tm-total-tanks');
-            if (totalTanksEl) totalTanksEl.innerText = allTanks.length;
-            const totalCap = allTanks.reduce((sum, t) => sum + (parseFloat(t.maxCapacity) || 0), 0);
-            const totalCapEl = document.getElementById('tm-total-capacity');
-            if (totalCapEl) totalCapEl.innerText = `${totalCap}L`;
-
-            // 1. SET THE ID — only restore the saved one if it still belongs to this user
-            const storedId = localStorage.getItem("userTankId");
-            const validStored = storedId && allTanks.some(t => t.tankId === storedId);
-            activeTankId = validStored ? storedId : allTanks[0].tankId;
-            localStorage.setItem("userTankId", activeTankId);
-
+            document.getElementById('tm-total-tanks').innerText = tanks.length;
+            const totalCap = tanks.reduce((sum, t) => sum + (parseFloat(t.maxCapacity) || 0), 0);
+            document.getElementById('tm-total-capacity').innerText = `${totalCap}L`;
+            // 1. SET THE ID: Retrieve the last used ID or default to the first tank
+            activeTankId = localStorage.getItem("userTankId") || tanks[0].tankId;
             const headerIdElement = document.getElementById('tm-header-tank-id');
-            if (headerIdElement) headerIdElement.innerText = activeTankId;
+         if (headerIdElement) {
+          headerIdElement.innerText = activeTankId; 
+        }
+            
+            // 2. INITIAL FETCH: One-time request to populate the UI immediately
+            fetchTankDetails(activeTankId); 
 
-            // 2. INITIAL FETCH: populate the UI immediately
-            fetchTankDetails(activeTankId);
+            // 3. INTERVAL RESET: Clear any existing timers to prevent query stacking
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
 
-            // 3. INTERVAL RESET
-            if (pollingInterval) clearInterval(pollingInterval);
-
-            // 4. START POLLING every 5 s
+            // 4. START POLLING: Periodically fetch fresh data every 5 seconds
             pollingInterval = setInterval(() => {
                 if (activeTankId && activeTankId !== "---") {
+                    console.log("Polling active for tank:", activeTankId);
                     fetchTankDetails(activeTankId);
                 }
             }, 5000);
-
+            
         } else {
             displayNoTankState();
         }
     } catch (error) {
         console.error("System Initialization Error:", error);
-        if (tmCardsContainer) {
-            tmCardsContainer.innerHTML = '<div style="padding:20px;color:#ef4444;">Could not load tanks. Check that the backend is running.</div>';
-        }
     }
 }
 // Single version of Switcher (Merged the two previous ones)
@@ -431,42 +408,55 @@ function renderDashboardSwitcher(tanks) {
  * This version is fully dynamic based on the provided HTML IDs.
  */
 function updateDashboardUI(tank) {
-    if (!tank) return;
-    const level    = Number.isFinite(tank.waterLevel)  ? tank.waterLevel  : 0;
-    const capacity = Number.isFinite(tank.maxCapacity) ? tank.maxCapacity : 0;
-
     // 1. Update Cylinder Visual & Inner Percentage
     const cylinderText = document.getElementById('inner-percent');
-    if (cylinderText) cylinderText.innerText = `${level.toFixed(0)}%`;
-    const fill = document.getElementById('visual-water-fill');
-    if (fill) fill.style.height = `${level}%`;
+    if (cylinderText) {
+        cylinderText.innerText = `${tank.waterLevel.toFixed(0)}%`;
+    }
+    if (document.getElementById('visual-water-fill')) {
+        document.getElementById('visual-water-fill').style.height = `${tank.waterLevel}%`;
+    }
 
     // 2. Update Header & Tank Name
-    const idLabel = document.getElementById('active-tank-id-label');
-    if (idLabel) idLabel.innerText = tank.tankId || tank.id || '—';
-    const nameEl  = document.getElementById('card-tank-name');
-    if (nameEl)  nameEl.innerText = `ID: ${tank.tankId || tank.id || '—'}`;
+    if (document.getElementById('active-tank-id-label')) {
+        document.getElementById('active-tank-id-label').innerText = tank.tankId || tank.id;
+    }
+    if (document.getElementById('card-tank-name')) {
+        document.getElementById('card-tank-name').innerText = `ID: ${tank.tankId || tank.id}`;
+    }
 
     // 3. Update Card Progress & Percent
-    const progressFill = document.getElementById('card-progress-fill');
-    if (progressFill) progressFill.style.width = `${level}%`;
-    const percentStat  = document.getElementById('card-percent-stat');
-    if (percentStat)  percentStat.innerText = `${level.toFixed(1)}%`;
+    if (document.getElementById('card-progress-fill')) {
+        document.getElementById('card-progress-fill').style.width = `${tank.waterLevel}%`;
+    }
+    if (document.getElementById('card-percent-stat')) {
+        document.getElementById('card-percent-stat').innerText = `${tank.waterLevel.toFixed(1)}%`;
+    }
 
     // 4. Update Volume Stats (Card and Monitor)
-    const currentLiters = (level / 100) * capacity;
-    const monitorVolume = document.getElementById('monitor-volume');
-    if (monitorVolume) monitorVolume.innerText = `${currentLiters.toFixed(1)} of ${capacity}L`;
+    const currentLiters = (tank.waterLevel / 100) * tank.maxCapacity;
+    if (document.getElementById('monitor-volume')) {
+        document.getElementById('monitor-volume').innerText = `${currentLiters.toFixed(1)} of ${tank.maxCapacity}L`;
+    }
     if (document.getElementById('card-volume-stat')) {
-        document.getElementById('card-volume-stat').innerText = `${currentLiters.toFixed(1)}L / ${capacity}L`;
+        document.getElementById('card-volume-stat').innerText = `${currentLiters.toFixed(1)}L / ${tank.maxCapacity}L`;
     }
 
     // --- SECTION 5: REAL-TIME MONITORING TILES & PUMP STATUS ---
     const monitorPercent = document.getElementById('monitor-percent');
     const monitorBar = document.getElementById('monitor-mini-bar');
 
-    if (monitorPercent) monitorPercent.innerText = `${level.toFixed(1)}%`;
-    if (monitorBar)     monitorBar.style.width   = `${level}%`;
+    if (monitorPercent) {
+        /** * SYNCHRONIZATION: Updates the monitoring tile percentage 
+         * based on the current water level data from the database.
+         */
+        monitorPercent.innerText = `${tank.waterLevel.toFixed(1)}%`;
+    }
+    
+    if (monitorBar) {
+        // Dynamically adjusts the width of the mini-progress bar
+        monitorBar.style.width = `${tank.waterLevel}%`;
+    }
     //5
 
     const pumpStatusBox = document.getElementById('monitor-pump-status');
@@ -625,12 +615,14 @@ function updateDashboardUI(tank) {
     const topAvgFill = document.getElementById('tm-avg-fill');
 
     if (topCurrentVolume) {
-        const calculatedVol = (level / 100) * capacity;
+        // Calculate real-time volume: (Current Level % / 100) * Max Capacity
+        const calculatedVol = (tank.waterLevel / 100) * tank.maxCapacity;
         topCurrentVolume.innerText = `${calculatedVol.toFixed(1)}L`;
     }
 
     if (topAvgFill) {
-        topAvgFill.innerText = `${level.toFixed(1)}%`;
+        // Update the global average fill level based on the active tank
+        topAvgFill.innerText = `${tank.waterLevel.toFixed(1)}%`;
     }
 }
 
@@ -646,53 +638,33 @@ function renderTankManagement(tanks) {
     if (headerId && activeTankId) {
         headerId.innerText = activeTankId;
     }
-
-    if (!tanks || !tanks.length) {
-        container.innerHTML = '<div style="padding:20px;color:#64748b;">No tanks registered yet. Click "Add Tank" to register one.</div>';
-        return;
-    }
-
-    const now = Date.now();
-    container.innerHTML = tanks.map(t => {
-        // Derive system status from lastUpdated heartbeat (backend /user-tanks doesn't send systemStatus)
-        let systemStatus = (t.systemStatus || '').toLowerCase();
-        if (!systemStatus) {
-            if (!t.lastUpdated) {
-                systemStatus = 'offline';
-            } else {
-                const last = new Date(t.lastUpdated).getTime();
-                systemStatus = (now - last) < 30000 ? 'online' : 'offline';
-            }
-        }
-        const level    = Number.isFinite(t.waterLevel)  ? t.waterLevel  : 0;
-        const capacity = Number.isFinite(t.maxCapacity) ? t.maxCapacity : 0;
-        const safeName = t.tankName || ('Tank ' + (t.tankId || ''));
-        const isAuto   = t.isAutomatic !== false;
-
-        return `
+    
+    container.innerHTML = tanks.map(t => `
         <div class="tm-card ${t.tankId === activeTankId ? 'active' : ''}" onclick="selectTank('${t.tankId}')">
             <div class="tm-card-top">
                 <div class="tm-status-wrap">
-                    <span class="tm-dot ${systemStatus}"></span>
-                    <span class="${systemStatus}-text">System ${systemStatus.charAt(0).toUpperCase() + systemStatus.slice(1)}</span>
+                    <span class="tm-dot ${t.systemStatus ? t.systemStatus.toLowerCase() : 'offline'}"></span>
+                    <span class="${t.systemStatus ? t.systemStatus.toLowerCase() : 'offline'}-text">
+                        System ${t.systemStatus || 'Offline'}
+                    </span>
                 </div>
-                <h3>${safeName}</h3>
-                <small style="color: #64748b;">Hardware ID: ${t.tankId || '—'}</small>
+                <h3>${t.tankName}</h3>
+                <small style="color: #64748b;">Hardware ID: ${t.tankId}</small>
             </div>
 
             <div class="tm-level-display">
                 <div class="tm-progress-container">
-                    <div class="tm-progress-fill" style="width: ${level}%"></div>
+                    <div class="tm-progress-fill" style="width: ${t.waterLevel}%"></div>
                 </div>
-                <div class="tm-percent-text">${level.toFixed(1)}%</div>
+                <div class="tm-percent-text">${t.waterLevel.toFixed(1)}%</div>
                 <div style="font-size: 0.8rem; color: #64748b; text-align: center;">
-                    Capacity: ${capacity}L
+                    Capacity: ${t.maxCapacity}L
                 </div>
             </div>
 
             <div class="tm-mode-indicator">
-                <i class="fas ${isAuto ? 'fa-robot' : 'fa-hand-pointer'} tm-mode-icon"></i>
-                ${isAuto ? 'Automatic Mode' : 'Manual Mode'}
+                <i class="fas ${t.isAutomatic ? 'fa-robot' : 'fa-hand-pointer'} tm-mode-icon"></i> 
+                ${t.isAutomatic ? 'Automatic Mode' : 'Manual Mode'}
             </div>
 
             <div class="tm-actions">
@@ -703,8 +675,8 @@ function renderTankManagement(tanks) {
                     <i class="fas fa-trash"></i> Delete
                 </button>
             </div>
-        </div>`;
-    }).join('');
+        </div>
+    `).join('');
 }
 /**
  * DATA FETCHING: ACTIVITY LOGS
@@ -712,83 +684,26 @@ function renderTankManagement(tanks) {
  * Maps Hardware IDs to User-Friendly Tank Names for better UI readability.
  * @param {string} emailFromNav - The email passed from the navigation trigger.
  */
-
-/* ============================================================
-   SELECT TANK — updates active tank, syncs UI, fetches details
-   ============================================================ */
-window.selectTank = function(tankId) {
-    if (!tankId) return;
-    activeTankId = tankId;
-    localStorage.setItem("userTankId", tankId);
-
-    // Highlight the active card in Tank Management view
-    document.querySelectorAll('.tm-card').forEach(card => card.classList.remove('active'));
-    document.querySelectorAll('.tm-card').forEach(card => {
-        if (card.getAttribute('onclick') && card.getAttribute('onclick').includes(tankId)) {
-            card.classList.add('active');
-        }
-    });
-
-    // Sync the header dropdown
-    const switcher = document.getElementById('tank-switcher');
-    if (switcher && switcher.value !== tankId) switcher.value = tankId;
-
-    // Update the header Tank ID label
-    const headerIdElement = document.getElementById('tm-header-tank-id');
-    if (headerIdElement) headerIdElement.innerText = tankId;
-
-    // Fetch latest data for this tank
-    fetchTankDetails(tankId);
-};
-
-/* ============================================================
-   DISPLAY NO-TANK STATE — shown when user has no registered tanks
-   ============================================================ */
-function displayNoTankState() {
-    const container = document.getElementById('tm-cards-container');
-    if (container) {
-        container.innerHTML = '<div style="padding:20px;color:#64748b;text-align:center;">' +
-            '<i class="fas fa-water" style="font-size:2rem;margin-bottom:10px;display:block;opacity:0.4;"></i>' +
-            'No tanks registered yet.<br>Click <strong>Add Tank</strong> to register your first tank.</div>';
-    }
-    const totalTanksEl = document.getElementById('tm-total-tanks');
-    if (totalTanksEl) totalTanksEl.innerText = '0';
-    const totalCapEl = document.getElementById('tm-total-capacity');
-    if (totalCapEl) totalCapEl.innerText = '0L';
-    // Clear the switcher
-    const switcher = document.getElementById('tank-switcher');
-    if (switcher) switcher.innerHTML = '<option value="">— No tanks —</option>';
-}
-
 async function fetchAllActivityLogs(emailFromNav) {
     try {
-        const userEmail = emailFromNav || localStorage.getItem("userEmail") || "system.water.tank@gmail.com";
+        const userEmail = emailFromNav || localStorage.getItem("userEmail") || "reginebagares27@gmail.com";
         
         const [logRes, tankRes] = await Promise.all([
-            fetch(`${API_URL}/api/logs/all?email=${userEmail}`),
-            fetch(`${API_URL}/api/tank/user-tanks?email=${userEmail}`)
+            fetch(`${RAILWAY_URL}/api/logs/all?email=${userEmail}`),
+            fetch(`${RAILWAY_URL}/api/tank/user-tanks?email=${userEmail}`)
         ]);
 
-        let logs = [];
-        let tanks = [];
-
-        if (logRes.ok) {
-            try { logs = await logRes.json(); } catch(e) { logs = []; }
-        }
-        if (tankRes.ok) {
-            try { tanks = await tankRes.json(); } catch(e) { tanks = []; }
-        }
-
+        const logs = await logRes.json();
+        const tanks = await tankRes.json();
         const tableBody = document.getElementById('activity-log-table-body');
+        
         if (!tableBody) return;
 
-        if (!Array.isArray(logs) || logs.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#64748b;padding:20px;">No activity logs found yet. Logs appear after tank events occur.</td></tr>';
-            updateActivitySummary([]);
-            return;
-        }
-
-        const sortedLogs = [...logs].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        /**
+         * CHRONOLOGICAL SORTING (UI FIX)
+         * We reverse the array to ensure March 28 logs appear at the top of the list.
+         */
+        const sortedLogs = logs.reverse();
 
         tableBody.innerHTML = sortedLogs.map(log => {
             const logTankId = log.tankData ? log.tankData.tankId : log.tankId;
@@ -881,7 +796,7 @@ async function handleManualPumpToggle() {
     if (!activeTankId || activeTankId === "---") return alert("Please select a tank first.");
 
     try {
-        const response = await fetch(`${API_URL}/api/tank/toggle-pump`, {
+        const response = await fetch(`${RAILWAY_URL}/api/tank/toggle-pump`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ tankId: activeTankId })
@@ -945,7 +860,7 @@ async function saveUserSettings() {
          * API REQUEST: POST to SettingsController
          * Sends the payload as a JSON string.
          */
-        const response = await fetch(`${API_URL}/api/settings/save`, {
+        const response = await fetch(`${RAILWAY_URL}/api/settings/save`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -991,7 +906,7 @@ async function loadSettingsData() {
     }
 
     try {
-        const res = await fetch(`${API_URL}/api/settings/load?email=${email}`);
+        const res = await fetch(`${RAILWAY_URL}/api/settings/load?email=${email}`);
         if (res.ok) {
             const data = await res.json();
             // 2. I-populate ang Phone at Toggles
@@ -1013,7 +928,7 @@ window.deleteTank = async function(tankId) {
     if (!confirm(`Are you sure you want to delete Tank ${tankId}? This will erase all logs.`)) return;
 
     try {
-        const res = await fetch(`${API_URL}/api/tank/delete/${tankId}`, {
+        const res = await fetch(`${RAILWAY_URL}/api/tank/delete/${tankId}`, {
             method: 'DELETE'
         });
 
@@ -1065,11 +980,6 @@ function setupNavigation() {
                 } else {
                     console.error("Navigation Error: User email not found in local storage.");
                 }
-            }
-
-            // Trigger My Tickets load when Need Help tab is opened
-            if (viewName === 'need-help-view') {
-                loadMyTickets();
             }
         });
     });
@@ -1162,7 +1072,7 @@ async function updateAnalytics() {
     
     // ITO ANG PINAKA-IMPORTANTENG DAGDAG:
     const encodedEmail = encodeURIComponent(email);
-    const baseUrl = `${API_URL}/api/analytics`;
+    const baseUrl = `${RAILWAY_URL}/api/analytics`;
     
     // Nilagay natin ang encodedEmail sa parameters
     const params = `?tankId=${tankId}&email=${encodedEmail}`;
@@ -1366,7 +1276,7 @@ async function loadTankNames() {
     try {
         // Updated URL to /api/tank/user-tanks to match your working dashboard endpoint (prevents 403)
         const encodedEmail = encodeURIComponent(email); 
-        const response = await fetch(`${API_URL}/api/tank/user-tanks?email=${encodedEmail}`);
+        const response = await fetch(`${RAILWAY_URL}/api/tank/user-tanks?email=${encodedEmail}`);
         
         if (response.ok) {
             const tanks = await response.json();
@@ -1479,15 +1389,13 @@ async function submitHelpTicket() {
     if (fileInput && fileInput.files[0]) formData.append("file", fileInput.files[0]);
 
     try {
-        const res = await fetch(`${API_URL}/api/support/submit`, { method: "POST", body: formData });
+        const res = await fetch(`${RAILWAY_URL}/api/support/submit`, { method: "POST", body: formData });
         if (res.ok) {
             const data = await res.json();
             statusDiv.innerHTML = `<p style="color:#27ae60;margin-top:10px;padding:12px;background:rgba(39,174,96,0.1);border-radius:8px;border:1px solid rgba(39,174,96,0.3);">
                 ✅ ${data.message}</p>`;
             document.getElementById("help-message").value = "";
             if (fileInput) fileInput.value = "";
-            // Refresh tickets list after submit
-            setTimeout(() => loadMyTickets(), 500);
         } else {
             statusDiv.innerHTML = '<p style="color:#e74c3c;margin-top:10px;">❌ Failed to submit. Try again.</p>';
         }
@@ -1496,153 +1404,5 @@ async function submitHelpTicket() {
     } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Concern';
-    }
-}
-
-/* ============================================================
-   MY TICKETS — conversation thread with reply & appeal system
-   ============================================================ */
-
-function fmtTicketDate(ts) {
-    if (!ts) return "—";
-    return new Date(ts).toLocaleString("en-PH", {
-        month: "short", day: "numeric", year: "numeric",
-        hour: "2-digit", minute: "2-digit"
-    });
-}
-
-function buildAttachmentPreviewUser(msg, apiUrl) {
-    if (!msg.attachmentOriginalName) return "";
-    const path = msg.attachmentPath || "";
-    const filename = path.replace(/^.*[\\\/]/, "");
-    const url = filename
-        ? `${apiUrl}/api/support/msg-attachment/${encodeURIComponent(filename)}`
-        : "";
-    if (!url) return `<div style="font-size:0.8rem;color:#888;margin-top:6px;"><i class="fas fa-paperclip"></i> ${msg.attachmentOriginalName}</div>`;
-    const isImage = (msg.attachmentType || "").startsWith("image/");
-    const isVideo = (msg.attachmentType || "").startsWith("video/");
-    if (isImage) return `<div style="margin-top:8px;"><img src="${url}" style="max-width:100%;max-height:180px;border-radius:8px;cursor:pointer;" onclick="window.open('${url}','_blank')" onerror="this.style.display='none'"></div>`;
-    if (isVideo) return `<div style="margin-top:8px;"><video controls style="max-width:100%;max-height:180px;border-radius:8px;"><source src="${url}" type="${msg.attachmentType}"></video></div>`;
-    return `<div style="margin-top:6px;font-size:0.82rem;"><i class="fas fa-paperclip"></i> <a href="${url}" target="_blank" style="color:#9b59b6;">${msg.attachmentOriginalName}</a></div>`;
-}
-
-function renderConversation(messages, isClosed, ticketId, apiUrl) {
-    if (!messages || !messages.length) return '<div style="color:#888;font-size:0.88rem;">No messages yet.</div>';
-    const bubbles = messages.map(msg => {
-        const isAdmin = msg.sender === "admin";
-        const bg = isAdmin ? "rgba(74,158,255,0.10)" : "rgba(155,89,182,0.08)";
-        const border = isAdmin ? "rgba(74,158,255,0.25)" : "rgba(155,89,182,0.2)";
-        const nameColor = isAdmin ? "#4a9eff" : "#9b59b6";
-        const align = isAdmin ? "flex-start" : "flex-end";
-        const attach = buildAttachmentPreviewUser(msg, apiUrl);
-        return `<div style="display:flex;justify-content:${align};margin-bottom:10px;">
-            <div style="max-width:85%;padding:10px 14px;background:${bg};border:1px solid ${border};border-radius:12px;">
-                <div style="font-size:0.75rem;font-weight:600;color:${nameColor};margin-bottom:4px;">
-                    ${isAdmin ? '<i class="fas fa-user-shield"></i>' : '<i class="fas fa-user"></i>'} ${msg.senderName || (isAdmin ? "Admin" : "You")}
-                    <span style="font-weight:400;color:#888;margin-left:8px;">${fmtTicketDate(msg.timestamp)}</span>
-                </div>
-                <div style="font-size:0.88rem;line-height:1.6;">${msg.message || ""}</div>
-                ${attach}
-            </div>
-        </div>`;
-    }).join("");
-
-    const replyBox = isClosed
-        ? `<div style="margin-top:14px;padding:12px 16px;background:rgba(231,76,60,0.08);border:1px solid rgba(231,76,60,0.2);border-radius:10px;font-size:0.85rem;color:#e74c3c;text-align:center;">
-               <i class="fas fa-lock"></i> This conversation has been <strong>closed</strong> by admin. Submit a new ticket if you need further help.
-           </div>`
-        : `<div style="margin-top:14px;border-top:1px solid rgba(255,255,255,0.07);padding-top:14px;">
-               <div style="font-size:0.85rem;font-weight:600;margin-bottom:8px;color:#ccc;">
-                   <i class="fas fa-reply" style="color:#9b59b6;"></i> Continue / Appeal
-               </div>
-               <textarea id="reply-msg-${ticketId}" rows="3" placeholder="Type your reply or appeal here..."
-                   style="width:100%;padding:10px 13px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:inherit;font-size:0.88rem;resize:vertical;box-sizing:border-box;"></textarea>
-               <div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap;">
-                   <input type="file" id="reply-file-${ticketId}" accept="image/*,video/*"
-                       style="flex:1;min-width:0;font-size:0.8rem;color:#aaa;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:5px 8px;border-radius:6px;">
-                   <button onclick="sendUserReply(${ticketId})"
-                       style="background:rgba(155,89,182,0.2);border:1px solid rgba(155,89,182,0.4);color:#9b59b6;padding:7px 18px;border-radius:8px;cursor:pointer;font-size:0.88rem;white-space:nowrap;">
-                       <i class="fas fa-paper-plane"></i> Send Reply
-                   </button>
-               </div>
-               <div id="reply-status-${ticketId}" style="margin-top:6px;font-size:0.83rem;"></div>
-           </div>`;
-
-    return bubbles + replyBox;
-}
-
-async function loadMyTickets() {
-    const email = localStorage.getItem("userEmail");
-    const container = document.getElementById("my-tickets-container");
-    if (!container) return;
-    if (!email) {
-        container.innerHTML = '<div style="color:#888;">Please log in to view your tickets.</div>';
-        return;
-    }
-    container.innerHTML = '<div style="color:#888;font-size:0.9rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
-    try {
-        const res = await fetch(`${API_URL}/api/support/my-tickets?email=${encodeURIComponent(email)}`);
-        if (!res.ok) throw new Error("Failed");
-        const tickets = await res.json();
-        if (!tickets.length) {
-            container.innerHTML = '<div style="color:#888;font-size:0.9rem;text-align:center;padding:24px 0;">No tickets submitted yet.</div>';
-            return;
-        }
-        container.innerHTML = tickets.map(t => {
-            const statusColor = t.status === "Open" ? "#e67e22" : t.status === "In Progress" ? "#3498db" : "#27ae60";
-            const statusBg = t.status === "Open" ? "rgba(230,126,34,0.12)" : t.status === "In Progress" ? "rgba(52,152,219,0.12)" : "rgba(39,174,96,0.12)";
-            const closedBadge = t.isClosed ? `<span style="margin-left:6px;padding:2px 9px;border-radius:20px;font-size:0.72rem;background:rgba(231,76,60,0.12);color:#e74c3c;"><i class="fas fa-lock"></i> Closed</span>` : "";
-
-            // Parse conversation
-            let conversation = [];
-            try { if (t.conversationJson) conversation = JSON.parse(t.conversationJson); } catch(e) {}
-            const convHTML = renderConversation(conversation, t.isClosed, t.id, API_URL);
-
-            return `<div style="padding:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;margin-bottom:16px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
-                    <div>
-                        <span style="font-weight:700;font-size:0.95rem;">${t.category || "General"}</span>
-                        <span style="font-size:0.78rem;color:#888;margin-left:8px;">Ticket #${t.id}</span>
-                        <span style="font-size:0.78rem;color:#888;margin-left:8px;">${fmtTicketDate(t.submittedAt)}</span>
-                    </div>
-                    <div>
-                        <span style="padding:3px 12px;border-radius:20px;font-size:0.78rem;font-weight:600;background:${statusBg};color:${statusColor};">${t.status}</span>
-                        ${closedBadge}
-                    </div>
-                </div>
-                <div>${convHTML}</div>
-            </div>`;
-        }).join("");
-    } catch (e) {
-        container.innerHTML = '<div style="color:#e74c3c;font-size:0.9rem;">❌ Could not load tickets. Check connection.</div>';
-    }
-}
-
-async function sendUserReply(ticketId) {
-    const msgEl  = document.getElementById(`reply-msg-${ticketId}`);
-    const fileEl = document.getElementById(`reply-file-${ticketId}`);
-    const statusEl = document.getElementById(`reply-status-${ticketId}`);
-    const message = msgEl ? msgEl.value.trim() : "";
-    if (!message) {
-        statusEl.innerHTML = '<span style="color:#e74c3c;">⚠️ Please type a message first.</span>';
-        return;
-    }
-    statusEl.innerHTML = '<span style="color:#aaa;"><i class="fas fa-spinner fa-spin"></i> Sending...</span>';
-    const formData = new FormData();
-    formData.append("message", message);
-    if (fileEl && fileEl.files[0]) formData.append("file", fileEl.files[0]);
-    try {
-        const res = await fetch(`${API_URL}/api/support/reply/${ticketId}`, { method: "POST", body: formData });
-        if (res.ok) {
-            statusEl.innerHTML = '<span style="color:#27ae60;">✅ Reply sent!</span>';
-            if (msgEl) msgEl.value = "";
-            if (fileEl) fileEl.value = "";
-            setTimeout(() => loadMyTickets(), 800);
-        } else {
-            const txt = await res.text();
-            statusEl.innerHTML = `<span style="color:#e74c3c;">❌ ${txt || "Failed to send."}</span>`;
-        }
-    } catch (e) {
-        statusEl.innerHTML = '<span style="color:#e74c3c;">❌ Connection error.</span>';
     }
 }
