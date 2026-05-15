@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: water-tank-backend
+    env: docker
+    dockerfilePath: Backend/system/system/Dockerfile
+    dockerContext: Backend/system/system
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod

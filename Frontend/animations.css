@@ -1,0 +1,719 @@
+/* ============================================================
+   WATER TANK SYSTEM — ANIMATIONS.CSS
+   Professional SaaS-grade motion design
+   Applied to ALL sections: Dashboard, Analytics, Activity Log,
+   Tank Management, Settings, Safety Tips, Need Help
+   Compatible: desktop + mobile, localhost + online
+   ============================================================ */
+
+/* ─────────────────────────────────────────────────────────────
+   1. CSS CUSTOM PROPERTIES
+   ───────────────────────────────────────────────────────────── */
+:root {
+    --anim-fast:   180ms;
+    --anim-base:   280ms;
+    --anim-slow:   420ms;
+    --anim-xslow:  600ms;
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-out:    cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --glow-blue:   0 0 0 3px rgba(74, 158, 255, 0.2), 0 4px 20px rgba(74, 158, 255, 0.18);
+    --glow-green:  0 0 0 3px rgba(34, 197, 94, 0.2),  0 4px 16px rgba(34, 197, 94, 0.15);
+    --glow-red:    0 0 0 3px rgba(239, 68, 68, 0.2),   0 4px 16px rgba(239, 68, 68, 0.15);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   2. PAGE / SECTION TRANSITIONS
+   Fade + slight slide when switching views — no instant switching
+   ───────────────────────────────────────────────────────────── */
+.content-section {
+    animation: pageReveal var(--anim-slow) var(--ease-out) both;
+}
+@keyframes pageReveal {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   3. SIDEBAR NAVIGATION
+   ───────────────────────────────────────────────────────────── */
+.nav-item {
+    position: relative;
+    transition:
+        background var(--anim-fast) var(--ease-out),
+        color      var(--anim-fast) var(--ease-out),
+        transform  var(--anim-base) var(--ease-spring) !important;
+    overflow: hidden;
+}
+
+/* Ripple layer for sidebar clicks */
+.nav-item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(74,158,255,0.18) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity var(--anim-base) var(--ease-out);
+    pointer-events: none;
+}
+.nav-item:hover::after { opacity: 1; }
+
+/* Left accent bar */
+.nav-item::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 50%;
+    transform: translateY(-50%) scaleY(0);
+    width: 3px; height: 60%;
+    background: var(--primary-color, #4a9eff);
+    border-radius: 0 3px 3px 0;
+    transition: transform var(--anim-base) var(--ease-spring);
+}
+.nav-item:hover::before,
+.nav-item.active::before { transform: translateY(-50%) scaleY(1); }
+
+.nav-item:hover {
+    transform: translateX(5px) !important;
+    box-shadow: inset 0 0 0 1px rgba(74,158,255,0.15) !important;
+}
+
+/* Icon pop on hover */
+.nav-item:hover i,
+.nav-item.active i {
+    transform: scale(1.15) !important;
+    transition: transform var(--anim-base) var(--ease-spring) !important;
+}
+.nav-item i {
+    transition: transform var(--anim-fast) var(--ease-out) !important;
+    display: inline-block;
+}
+
+/* Active nav item — no looping pulse animation */
+.nav-item.active {
+    /* Highlight handled by existing active styles */
+}
+
+/* Mobile sidebar drawer */
+.sidebar {
+    transition: transform var(--anim-slow) var(--ease-spring) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   4. BUTTONS — ALL button types
+   ───────────────────────────────────────────────────────────── */
+button,
+.btn,
+.login-btn,
+.action-btn-save,
+.tm-add-btn,
+.btn-primary,
+.btn-secondary,
+.logout-btn,
+.fab-btn,
+.dark-mode-desktop-btn,
+.scan-trigger-btn,
+[class*="btn-"],
+[class*="-btn"] {
+    position: relative;
+    overflow: hidden;
+    transition:
+        transform     var(--anim-base) var(--ease-spring),
+        box-shadow    var(--anim-base) var(--ease-out),
+        background    var(--anim-fast) var(--ease-out),
+        border-color  var(--anim-fast) var(--ease-out),
+        opacity       var(--anim-fast) var(--ease-out) !important;
+    cursor: pointer;
+}
+
+/* Ripple click wave */
+button::after,
+.btn::after,
+.login-btn::after,
+.action-btn-save::after,
+.tm-add-btn::after,
+.btn-primary::after,
+.btn-secondary::after {
+    content: '';
+    position: absolute;
+    width: 0; height: 0;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: width 0.5s ease, height 0.5s ease, opacity 0.5s ease;
+    pointer-events: none;
+}
+button.rippling::after,
+.btn.rippling::after,
+.login-btn.rippling::after,
+.action-btn-save.rippling::after,
+.tm-add-btn.rippling::after,
+.btn-primary.rippling::after,
+.btn-secondary.rippling::after {
+    width: 300px; height: 300px;
+    opacity: 0;
+}
+
+button:hover:not(:disabled),
+.btn:hover:not(:disabled),
+.login-btn:hover,
+.action-btn-save:hover,
+.tm-add-btn:hover,
+.btn-primary:hover {
+    transform: scale(1.03) translateY(-1px);
+    box-shadow: 0 6px 20px rgba(74,158,255,0.3) !important;
+}
+
+button:active:not(:disabled),
+.btn:active,
+.login-btn:active,
+.action-btn-save:active,
+.btn-primary:active,
+.tm-add-btn:active {
+    transform: scale(0.97) !important;
+    transition-duration: var(--anim-fast) !important;
+}
+
+/* Loading state */
+.btn-loading {
+    opacity: 0.7;
+    cursor: wait !important;
+    pointer-events: none;
+}
+.btn-loading::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+    animation: btnShimmer 1.2s ease infinite;
+}
+@keyframes btnShimmer {
+    from { transform: translateX(-100%); }
+    to   { transform: translateX(100%); }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   5. CARDS — Entrance + hover float
+   ───────────────────────────────────────────────────────────── */
+
+/* Stagger entrance for card grids */
+.tm-grid .tm-card:nth-child(1)  { animation-delay: 0ms;   }
+.tm-grid .tm-card:nth-child(2)  { animation-delay: 60ms;  }
+.tm-grid .tm-card:nth-child(3)  { animation-delay: 120ms; }
+.tm-grid .tm-card:nth-child(4)  { animation-delay: 180ms; }
+.tm-grid .tm-card:nth-child(5)  { animation-delay: 240ms; }
+.tm-grid .tm-card:nth-child(6)  { animation-delay: 300ms; }
+
+.tm-card,
+.tank-card,
+.monitor-card,
+.settings-card,
+.ana-chart-card,
+.tm-dashboard-card,
+.ana-stat-box,
+.log-table-container,
+.ticket-card,
+.tip-card,
+.summary-box {
+    animation: cardFadeUp var(--anim-slow) var(--ease-out) both;
+    transition:
+        transform  var(--anim-base) var(--ease-spring) !important,
+        box-shadow var(--anim-base) var(--ease-out)    !important;
+}
+
+@keyframes cardFadeUp {
+    from { opacity: 0; transform: translateY(16px) scale(0.99); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+.tm-card:hover,
+.settings-card:hover,
+.tip-card:hover {
+    transform: translateY(-4px) scale(1.005) !important;
+    box-shadow: 0 16px 40px rgba(31, 58, 100, 0.18) !important;
+}
+
+.ana-stat-box:hover {
+    transform: translateY(-3px) scale(1.02) !important;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.15) !important;
+}
+
+.tank-card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 14px 36px rgba(31,58,100,0.16) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   6. STATUS / ONLINE INDICATORS
+   Animations removed per user request — no pulse/blink on status dots
+   ───────────────────────────────────────────────────────────── */
+
+/* ─────────────────────────────────────────────────────────────
+   7. DASHBOARD — Water tank, counters, shimmer
+   ───────────────────────────────────────────────────────────── */
+
+/* Animated water wave inside tank */
+.tank-water-fill,
+.water-fill,
+[class*="water-level"] {
+    transition: height 1.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative;
+    overflow: hidden;
+}
+.tank-water-fill::after,
+.water-fill::after {
+    content: '';
+    position: absolute;
+    top: -6px; left: -10%;
+    width: 120%; height: 12px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    animation: waterWave 2.2s ease-in-out infinite;
+}
+@keyframes waterWave {
+    0%, 100% { transform: translateX(0) scaleY(1);    }
+    50%       { transform: translateX(8%) scaleY(1.4); }
+}
+
+/* Animated counter numbers */
+.counter-value,
+.ana-stat-value,
+[class*="stat-number"],
+[class*="level-value"] {
+    transition: all 0.5s var(--ease-out) !important;
+}
+
+/* Progress bars — smooth fill */
+.progress-fill,
+.level-fill,
+[class*="progress-bar"] {
+    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Shimmer on cards loading */
+.shimmer {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%);
+    background-size: 200% 100%;
+    animation: shimmerSlide 1.5s ease infinite;
+}
+@keyframes shimmerSlide {
+    from { background-position: 200% 0; }
+    to   { background-position: -200% 0; }
+}
+
+/* Skeleton loader */
+.skeleton {
+    background: linear-gradient(90deg, rgba(203,213,225,0.4) 25%, rgba(226,232,240,0.6) 50%, rgba(203,213,225,0.4) 75%);
+    background-size: 200% 100%;
+    border-radius: 6px;
+    animation: skeletonWave 1.4s ease infinite;
+}
+@keyframes skeletonWave {
+    from { background-position: 200% 0; }
+    to   { background-position: -200% 0; }
+}
+
+/* Tank cylindrical fill transition */
+#dashboard-view [class*="tank"],
+#dashboard-view [class*="level"],
+#tanks-view [class*="level"] {
+    transition: all 0.9s var(--ease-in-out) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   8. ANALYTICS
+   ───────────────────────────────────────────────────────────── */
+.ana-chart-card {
+    transition:
+        transform  var(--anim-base) var(--ease-spring),
+        box-shadow var(--anim-base) var(--ease-out),
+        opacity    var(--anim-slow) var(--ease-out) !important;
+}
+.ana-chart-card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 14px 36px rgba(31,58,100,0.18) !important;
+}
+
+/* Stat boxes — colored entrance */
+.ana-stat-box { animation: cardFadeUp var(--anim-slow) var(--ease-out) both; }
+.ana-stat-box:nth-child(1) { animation-delay: 0ms; }
+.ana-stat-box:nth-child(2) { animation-delay: 80ms; }
+.ana-stat-box:nth-child(3) { animation-delay: 160ms; }
+.ana-stat-box:nth-child(4) { animation-delay: 240ms; }
+
+/* ─────────────────────────────────────────────────────────────
+   9. ACTIVITY LOG
+   ───────────────────────────────────────────────────────────── */
+.boss-log-table tr {
+    transition: background var(--anim-fast) var(--ease-out) !important;
+    animation: rowSlideIn var(--anim-base) var(--ease-out) both;
+}
+@keyframes rowSlideIn {
+    from { opacity: 0; transform: translateX(-6px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+.boss-log-table tbody tr:nth-child(1) { animation-delay: 0ms; }
+.boss-log-table tbody tr:nth-child(2) { animation-delay: 40ms; }
+.boss-log-table tbody tr:nth-child(3) { animation-delay: 80ms; }
+.boss-log-table tbody tr:nth-child(4) { animation-delay: 120ms; }
+.boss-log-table tbody tr:nth-child(5) { animation-delay: 160ms; }
+.boss-log-table tbody tr:nth-child(6) { animation-delay: 200ms; }
+
+.boss-log-table tr:hover {
+    background: rgba(219,234,254,0.5) !important;
+    transform: none !important;
+}
+
+/* Filter bar transition */
+.filter-bar select,
+.filter-bar input,
+.filter-dropdown {
+    transition:
+        border-color var(--anim-fast) var(--ease-out),
+        box-shadow   var(--anim-fast) var(--ease-out),
+        background   var(--anim-fast) var(--ease-out) !important;
+}
+.filter-bar select:focus,
+.filter-bar input:focus {
+    border-color: var(--primary-color, #4a9eff) !important;
+    box-shadow: 0 0 0 3px rgba(74,158,255,0.15) !important;
+    outline: none !important;
+}
+
+/* Status badges */
+.status-badge,
+[class*="badge"] {
+    transition: transform var(--anim-fast) var(--ease-spring) !important;
+}
+.status-badge:hover {
+    transform: scale(1.08) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   10. TANK MANAGEMENT
+   ───────────────────────────────────────────────────────────── */
+
+.tm-add-btn:hover,
+.fab-btn:hover {
+    transform: scale(1.08) translateY(-2px) !important;
+    box-shadow: 0 8px 28px rgba(74,158,255,0.55) !important;
+}
+
+/* Edit / delete buttons */
+.tm-btn-edit,
+.tm-btn-delete {
+    transition: all var(--anim-base) var(--ease-spring) !important;
+}
+.tm-btn-edit:hover  { transform: scale(1.12) !important; }
+.tm-btn-delete:hover{ transform: scale(1.12) rotate(8deg) !important; }
+.tm-btn-edit:active,
+.tm-btn-delete:active { transform: scale(0.9) !important; }
+
+.tm-card.active {
+    border: 2px solid var(--primary-color, #4a9eff) !important;
+    box-shadow: 0 0 0 3px rgba(74,158,255,0.15), 0 8px 28px rgba(31,58,100,0.15) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   11. SETTINGS
+   ───────────────────────────────────────────────────────────── */
+
+/* Input focus glow */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+textarea,
+select,
+.custom-field,
+.settings-input {
+    transition:
+        border-color var(--anim-fast) var(--ease-out),
+        box-shadow   var(--anim-fast) var(--ease-out),
+        background   var(--anim-fast) var(--ease-out) !important;
+}
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus,
+textarea:focus,
+select:focus,
+.custom-field:focus {
+    border-color: var(--primary-color, #4a9eff) !important;
+    box-shadow: 0 0 0 3px rgba(74,158,255,0.18) !important;
+    outline: none !important;
+    transform: none !important;
+}
+
+/* Field error shake */
+.field-error {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.15) !important;
+    animation: fieldShake 0.4s var(--ease-out) !important;
+}
+@keyframes fieldShake {
+    0%, 100% { transform: translateX(0);   }
+    20%       { transform: translateX(-7px); }
+    40%       { transform: translateX(7px);  }
+    60%       { transform: translateX(-4px); }
+    80%       { transform: translateX(4px);  }
+}
+
+/* Toggle switches */
+.toggle-switch,
+.switch,
+[class*="toggle"] {
+    transition: all var(--anim-base) var(--ease-spring) !important;
+    cursor: pointer;
+}
+.toggle-switch:hover,
+.switch:hover {
+    filter: brightness(1.08);
+    transform: scale(1.05);
+}
+
+/* Settings card expand */
+.settings-card {
+    transition:
+        transform     var(--anim-base) var(--ease-spring),
+        box-shadow    var(--anim-base) var(--ease-out),
+        border-color  var(--anim-fast) var(--ease-out) !important;
+}
+.settings-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 12px 32px rgba(31,58,100,0.15) !important;
+}
+
+/* Save button loading shimmer */
+#save-settings-btn.btn-loading::before {
+    animation: btnShimmer 1s ease infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   12. SAFETY TIPS
+   ───────────────────────────────────────────────────────────── */
+.tip-card,
+[class*="policy-card"],
+[class*="tip-item"],
+.policy-panel {
+    animation: cardFadeUp var(--anim-slow) var(--ease-out) both;
+    transition: all var(--anim-base) var(--ease-spring) !important;
+}
+.tip-card:nth-child(1) { animation-delay: 0ms;   }
+.tip-card:nth-child(2) { animation-delay: 70ms;  }
+.tip-card:nth-child(3) { animation-delay: 140ms; }
+.tip-card:nth-child(4) { animation-delay: 210ms; }
+
+.tip-card:hover,
+[class*="policy-card"]:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 12px 30px rgba(31,58,100,0.15) !important;
+}
+
+/* Icon hover bounce */
+.tip-card i,
+[class*="tip-icon"],
+.policy-icon {
+    transition: transform var(--anim-base) var(--ease-spring) !important;
+    display: inline-block;
+}
+.tip-card:hover i,
+[class*="policy-card"]:hover i {
+    transform: scale(1.2) rotate(-5deg) !important;
+}
+
+/* Warning pulse removed per user request */
+
+/* ─────────────────────────────────────────────────────────────
+   13. NEED HELP / SUPPORT TICKETS
+   ───────────────────────────────────────────────────────────── */
+.ticket-card,
+[class*="support-card"],
+[class*="ticket-item"] {
+    animation: cardFadeUp var(--anim-slow) var(--ease-out) both;
+    transition: all var(--anim-base) var(--ease-spring) !important;
+}
+.ticket-card:nth-child(1) { animation-delay: 0ms;   }
+.ticket-card:nth-child(2) { animation-delay: 70ms;  }
+.ticket-card:nth-child(3) { animation-delay: 140ms; }
+
+.ticket-card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 12px 30px rgba(31,58,100,0.15) !important;
+}
+
+/* Textarea glow */
+textarea:focus {
+    box-shadow: 0 0 0 3px rgba(74,158,255,0.18), 0 4px 16px rgba(74,158,255,0.12) !important;
+    border-color: var(--primary-color, #4a9eff) !important;
+}
+
+/* File upload button hover */
+[class*="upload"],
+[type="file"] + label,
+.upload-btn {
+    transition: all var(--anim-base) var(--ease-spring) !important;
+}
+[class*="upload"]:hover,
+.upload-btn:hover {
+    transform: scale(1.04) !important;
+    box-shadow: 0 4px 16px rgba(74,158,255,0.25) !important;
+}
+
+/* Submit success animation */
+.submit-success {
+    animation: successBounce 0.5s var(--ease-spring) both;
+}
+@keyframes successBounce {
+    from { transform: scale(0.8); opacity: 0; }
+    60%   { transform: scale(1.08); }
+    to    { transform: scale(1);    opacity: 1; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   14. TOAST NOTIFICATIONS
+   ───────────────────────────────────────────────────────────── */
+#wt-toast {
+    animation: toastSlideIn 0.38s var(--ease-spring) both !important;
+}
+@keyframes toastSlideIn {
+    from { transform: translateX(110%); opacity: 0; }
+    to   { transform: translateX(0);    opacity: 1; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   15. MODAL ANIMATIONS
+   ───────────────────────────────────────────────────────────── */
+.tm-modal-content,
+[class*="modal-content"] {
+    animation: modalReveal 0.3s var(--ease-spring) both !important;
+}
+@keyframes modalReveal {
+    from { opacity: 0; transform: translateY(-16px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0)     scale(1);    }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   16. LOGOUT + DARK TOGGLE BUTTONS
+   ───────────────────────────────────────────────────────────── */
+.logout-btn {
+    transition: all var(--anim-base) var(--ease-spring) !important;
+}
+.logout-btn:hover {
+    transform: translateX(5px) !important;
+    color: #ef4444 !important;
+}
+
+.dark-mode-desktop-btn:hover i {
+    transform: rotate(25deg) scale(1.1) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   17. PUMP BUTTON — pulse when active
+   ───────────────────────────────────────────────────────────── */
+.manual-pump-btn-small,
+[class*="pump-btn"],
+[class*="pump-button"] {
+    transition: all var(--anim-base) var(--ease-spring) !important;
+}
+.manual-pump-btn-small:hover {
+    transform: scale(1.08) !important;
+    box-shadow: 0 4px 18px rgba(239,68,68,0.4) !important;
+}
+.manual-pump-btn-small:active {
+    transform: scale(0.92) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   18. VIEW HEADER ENTRANCE
+   ───────────────────────────────────────────────────────────── */
+.view-header {
+    animation: headerSlideDown 0.4s var(--ease-out) both;
+}
+@keyframes headerSlideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0);     }
+}
+
+/* Ambient background motion removed per user request */
+
+/* ─────────────────────────────────────────────────────────────
+   20. CHART CANVAS FADE-IN
+   ───────────────────────────────────────────────────────────── */
+canvas {
+    animation: canvasFadeIn 0.6s var(--ease-out) both;
+}
+@keyframes canvasFadeIn {
+    from { opacity: 0; transform: scaleY(0.96); transform-origin: bottom; }
+    to   { opacity: 1; transform: scaleY(1);    }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   21. INFO TILES & SUMMARY BOXES
+   ───────────────────────────────────────────────────────────── */
+.info-tile,
+.summary-box {
+    transition: all var(--anim-base) var(--ease-spring) !important;
+}
+.info-tile:hover,
+.summary-box:hover {
+    transform: scale(1.02) translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(31,58,100,0.13) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   22. MOBILE TAP OPTIMIZATIONS
+   ───────────────────────────────────────────────────────────── */
+.mob-nav-item {
+    transition: all var(--anim-base) var(--ease-spring) !important;
+    -webkit-tap-highlight-color: transparent;
+}
+.mob-nav-item:active {
+    transform: scale(0.86) !important;
+    opacity: 0.7 !important;
+    transition-duration: var(--anim-fast) !important;
+}
+
+/* Mobile header icon taps */
+.mobile-header button,
+.mobile-header [class*="icon"],
+.mobile-header [class*="btn"] {
+    -webkit-tap-highlight-color: transparent;
+    transition: transform var(--anim-fast) var(--ease-spring) !important;
+}
+.mobile-header button:active {
+    transform: scale(0.88) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   23. REDUCED MOTION — respect user accessibility settings
+   ───────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   24. DARK MODE ADJUSTMENTS
+   ───────────────────────────────────────────────────────────── */
+body.dark-mode .skeleton {
+    background: linear-gradient(90deg, rgba(30,41,59,0.6) 25%, rgba(51,65,85,0.7) 50%, rgba(30,41,59,0.6) 75%);
+    background-size: 200% 100%;
+    animation: skeletonWave 1.4s ease infinite;
+}
+
+body.dark-mode .tm-card:hover,
+body.dark-mode .settings-card:hover,
+body.dark-mode .tip-card:hover,
+body.dark-mode .ticket-card:hover {
+    box-shadow: 0 16px 40px rgba(0,0,0,0.4) !important;
+}
+
+body.dark-mode .boss-log-table tr:hover {
+    background: rgba(74,158,255,0.08) !important;
+}

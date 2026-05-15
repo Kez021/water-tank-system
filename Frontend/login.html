@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Automated Tank System</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Gloock&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="animations.css">
+    <link rel="stylesheet" href="notify.css">
+</head>
+<body>
+
+<div class="page-wrapper">
+    <div class="login-box">
+
+        <img src="image/tanklogo.png" alt="Logo" class="main-logo">
+        <h1 class="main-title">Automated Overhead Tank</h1>
+
+        <form id="loginForm">
+<div class="input-group">
+    <input type="email" id="emailInput" placeholder="Enter your registered email" required>
+</div>
+
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Password" required>
+                <i class="fa-solid fa-eye-slash" id="togglePassword" style="cursor: pointer;"></i>
+            </div>
+
+            <div class="btn-row">
+                <button type="submit" class="login-btn">Login</button>
+            </div>
+
+            <div class="form-footer">
+                <a href="forgot-password.html" class="forgot-link">Forgot Password?</a>
+
+                <p class="register-text">
+                    No account?
+                    <a href="register.html" class="reg-bold">Register Here</a>
+                </p>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+<script src="notify.js"></script>
+<script src="app.js"></script>
+<script>
+document.addEventListener('click',function(e){
+    var btn=e.target.closest('button,.btn,.login-btn');
+    if(!btn)return;
+    var rect=btn.getBoundingClientRect();
+    var r=document.createElement('span');
+    var size=Math.max(rect.width,rect.height)*2;
+    r.style.cssText='position:absolute;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%) scale(0);background:rgba(255,255,255,0.28);width:'+size+'px;height:'+size+'px;left:'+(e.clientX-rect.left)+'px;top:'+(e.clientY-rect.top)+'px;animation:rippleExpand 0.55s ease-out forwards;';
+    btn.appendChild(r);setTimeout(function(){r.remove()},600);
+});
+var s=document.createElement('style');
+s.textContent='@keyframes rippleExpand{to{transform:translate(-50%,-50%) scale(1);opacity:0;}}';
+document.head.appendChild(s);
+</script>
+</body>
+</html>

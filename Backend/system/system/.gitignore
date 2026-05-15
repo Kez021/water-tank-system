@@ -1,0 +1,15 @@
+# Environment variables — NEVER commit this
+.env
+
+# Build output
+target/
+*.class
+
+# IDE files
+.idea/
+*.iml
+
+# Local database
+data/
+*.mv.db
+*.trace.db

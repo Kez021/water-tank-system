@@ -1,0 +1,8 @@
+POST http://localhost:8080/api/tank/sync
+Content-Type: application/json
+
+{
+    "tankId": "62714172.",
+    "rawDistance": 150.0,
+    "usageAmount": 500.0
+}
